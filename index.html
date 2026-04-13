@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng bài tự động Fanpage</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #1877F2;
+    --blue-light: #E7F0FD;
+    --blue-mid: #B0C8F9;
+    --green: #1D9E75;
+    --green-light: #E5F6F0;
+    --red: #E24B4A;
+    --red-light: #FDEAEA;
+    --amber: #BA7517;
+    --amber-light: #FEF3DC;
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --surface2: #F0F2F5;
+    --border: #D8DADE;
+    --text: #1C1E21;
+    --text2: #65676B;
+    --text3: #8A8D91;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  /* NAV */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 100; }
+  .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--blue); text-decoration: none; }
+  .nav-logo svg { width: 28px; height: 28px; fill: var(--blue); }
+  .nav-tabs { display: flex; gap: 4px; margin-left: auto; }
+  .nav-tab { padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; border: none; background: transparent; color: var(--text2); font-family: inherit; transition: all 0.15s; }
+  .nav-tab:hover { background: var(--surface2); }
+  .nav-tab.active { background: var(--blue-light); color: var(--blue); font-weight: 500; }
+
+  /* LAYOUT */
+  .container { max-width: 1080px; margin: 0 auto; padding: 24px 16px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+  @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+  .card + .card { margin-top: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+  .card-title svg { width: 14px; height: 14px; }
+
+  /* TEXTAREA */
+  .post-area { width: 100%; min-height: 140px; resize: vertical; font-size: 15px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; transition: border-color 0.15s; }
+  .post-area:focus { outline: none; border-color: var(--blue); background: var(--surface); }
+  .char-bar { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 12px; }
+  .char-count { font-size: 12px; color: var(--text3); }
+  .char-count.warn { color: var(--amber); }
+  .char-count.over { color: var(--red); }
+  .char-progress { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin: 0 10px; overflow: hidden; }
+  .char-fill { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.2s, background 0.2s; }
+
+  /* HASHTAGS */
+  .hashtag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .hashtag { font-size: 12px; padding: 4px 10px; background: var(--blue-light); color: var(--blue); border-radius: 20px; cursor: pointer; border: none; font-family: inherit; transition: background 0.15s; }
+  .hashtag:hover { background: var(--blue-mid); }
+
+  /* MEDIA BUTTONS */
+  .media-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .media-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text2); cursor: pointer; background: var(--surface); font-family: inherit; transition: all 0.15s; }
+  .media-btn:hover { background: var(--surface2); border-color: var(--text3); }
+  .media-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .media-preview { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 13px; color: var(--text2); }
+  .media-preview button { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; line-height: 1; }
+
+  /* SCHEDULE */
+  .schedule-group { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .toggle-group { display: flex; background: var(--surface2); padding: 3px; border-radius: var(--radius-sm); }
+  .tgl-btn { padding: 5px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text2); font-family: inherit; transition: all 0.15s; }
+  .tgl-btn.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+  .datetime-input { padding: 7px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--surface); }
+  .datetime-input:focus { outline: none; border-color: var(--blue); }
+
+  /* SUBMIT BTN */
+  .post-btn { width: 100%; padding: 11px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.15s, transform 0.1s; }
+  .post-btn:hover:not(:disabled) { opacity: 0.92; }
+  .post-btn:active:not(:disabled) { transform: scale(0.99); }
+  .post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .post-btn svg { width: 17px; height: 17px; }
+  .post-btn .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* PAGES */
+  .page-list { display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto; }
+  .page-item { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .page-item:hover { background: var(--surface2); }
+  .page-item.selected { border-color: var(--blue); background: var(--blue-light); }
+  .page-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .page-info { flex: 1; min-width: 0; }
+  .page-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .page-meta { font-size: 11px; color: var(--text3); }
+  .check-icon { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .page-item.selected .check-icon { background: var(--blue); border-color: var(--blue); }
+  .check-icon svg { display: none; }
+  .page-item.selected .check-icon svg { display: block; }
+  .select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
+  .link-btn:hover { text-decoration: underline; }
+
+  /* PREVIEW */
+  .fb-preview { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .fb-preview-header { background: var(--surface2); padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+  .fb-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; }
+  .fb-avatar-sm svg { width: 18px; height: 18px; fill: white; }
+  .fb-preview-name { font-size: 13px; font-weight: 600; }
+  .fb-preview-time { font-size: 11px; color: var(--text3); }
+  .fb-preview-body { padding: 12px; font-size: 14px; line-height: 1.55; min-height: 60px; word-break: break-word; white-space: pre-wrap; color: var(--text2); font-style: italic; }
+  .fb-preview-body.has-content { color: var(--text); font-style: normal; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .stat-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* QUEUE */
+  .queue-list { display: flex; flex-direction: column; gap: 5px; max-height: 160px; overflow-y: auto; }
+  .queue-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .q-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .q-text { flex: 1; font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .q-time { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+  .q-del { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1; }
+
+  /* SETTINGS PAGE */
+  .settings-page { display: none; max-width: 640px; margin: 24px auto; padding: 0 16px; }
+  .settings-page.active { display: block; }
+  .main-layout { display: block; }
+  .main-layout.hidden { display: none; }
+
+  .input-group { margin-bottom: 14px; }
+  .input-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+  .input-field { width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); transition: border-color 0.15s; }
+  .input-field:focus { outline: none; border-color: var(--blue); background: var(--surface); }
+
+  .saved-pages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .saved-page-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+  .saved-page-info { flex: 1; }
+  .saved-page-name { font-size: 13px; font-weight: 500; }
+  .saved-page-id { font-size: 11px; color: var(--text3); font-family: monospace; }
+  .saved-page-status { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .status-ok { background: var(--green-light); color: var(--green); }
+  .status-err { background: var(--red-light); color: var(--red); }
+  .btn-del-page { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
+  .btn-del-page:hover { color: var(--red); }
+
+  .btn-primary { padding: 9px 18px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary { padding: 9px 18px; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-row { display: flex; gap: 8px; }
+
+  .info-box { padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+  .info-box.blue { background: var(--blue-light); color: #185FA5; border-left: 3px solid var(--blue); }
+  .info-box.amber { background: var(--amber-light); color: var(--amber); border-left: 3px solid var(--amber); }
+  .info-box a { color: inherit; font-weight: 600; }
+
+  /* RESULT LOG */
+  .result-log { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .result-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; }
+  .result-item.ok { background: var(--green-light); color: #0F6E56; }
+  .result-item.err { background: var(--red-light); color: #A32D2D; }
+  .result-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 10px; z-index: 999; opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none; max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* STEP GUIDE */
+  .step { display: flex; gap: 12px; margin-bottom: 16px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-content { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .step-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .step-desc code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; }
+
+  .sep { height: 1px; background: var(--border); margin: 16px 0; }
+  .empty-hint { font-size: 12px; color: var(--text3); text-align: center; padding: 12px 0; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    FanPage Publisher
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('main')">✏️ Đăng bài</button>
+    <button class="nav-tab" onclick="showTab('settings')">⚙️ Cài đặt Fanpage</button>
+    <button class="nav-tab" onclick="showTab('guide')">📖 Hướng dẫn</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main-layout container" id="mainTab">
+  <div>
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Nội dung bài đăng
+      </div>
+      <textarea class="post-area" id="postText" placeholder="Viết nội dung bài đăng của bạn tại đây..." oninput="updatePreview(); updateCharCount()"></textarea>
+      <div class="char-bar">
+        <span class="char-count" id="charCount">0</span>
+        <div class="char-progress"><div class="char-fill" id="charFill" style="width:0%"></div></div>
+        <span style="font-size:12px;color:var(--text3)">63,206</span>
+      </div>
+      <div class="hashtag-row" id="hashtagRow"></div>
+      <div class="media-row">
+        <button class="media-btn" onclick="addMedia('🖼️','Ảnh')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> Thêm ảnh
+        </button>
+        <button class="media-btn" onclick="addMedia('🎬','Video')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Video
+        </button>
+        <button class="media-btn" onclick="addMedia('🔗','Link')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link
+        </button>
+      </div>
+      <div id="mediaPreviewArea"></div>
+
+      <div class="sep"></div>
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Lên lịch
+      </div>
+      <div class="schedule-group">
+        <div class="toggle-group">
+          <button class="tgl-btn active" id="nowBtn" onclick="setSchedule('now')">Đăng ngay</button>
+          <button class="tgl-btn" id="schedBtn" onclick="setSchedule('schedule')">Lên lịch</button>
+        </div>
+        <input type="datetime-local" class="datetime-input" id="schedTime" style="display:none;" />
+      </div>
+
+      <button class="post-btn" id="postBtn" onclick="submitPost()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span id="postBtnText">Chọn fanpage để đăng</span>
+      </button>
+      <div id="resultLog" class="result-log"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="select-all-row">
+        <div class="card-title" style="margin:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Chọn fanpage
+        </div>
+        <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
+      </div>
+      <div class="page-list" id="pageList">
+        <div class="empty-hint">Chưa có fanpage nào.<br><a href="#" onclick="showTab('settings')" style="color:var(--blue)">Thêm fanpage trong Cài đặt →</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        Xem trước
+      </div>
+      <div class="fb-preview">
+        <div class="fb-preview-header">
+          <div class="fb-avatar-sm"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+          <div><div class="fb-preview-name" id="previewPageName">Tên fanpage</div><div class="fb-preview-time">Vừa xong · 🌐</div></div>
+        </div>
+        <div class="fb-preview-body" id="previewBody">Nội dung bài đăng sẽ hiện ở đây...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Thống kê hôm nay</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" id="statPosted">0</div><div class="stat-lbl">Đã đăng</div></div>
+        <div class="stat-box"><div class="stat-num" id="statFailed">0</div><div class="stat-lbl">Thất bại</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPages">0</div><div class="stat-lbl">Trang chọn</div></div>
+      </div>
+      <div class="card-title" style="margin-bottom:8px">🕐 Lịch sử</div>
+      <div class="queue-list" id="historyList">
+        <div class="empty-hint">Chưa có lịch sử đăng bài</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-page" id="settingsTab">
+  <div class="card">
+    <div class="card-title">⚙️ Quản lý Fanpage</div>
+    <div class="info-box amber">
+      ⚠️ Token của bạn được lưu trong <strong>localStorage</strong> trên máy tính này, không gửi đến máy chủ nào. Không chia sẻ file hoặc máy tính cho người khác khi đang lưu token.
+    </div>
+    <div id="savedPagesList"></div>
+    <div class="sep"></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px;">➕ Thêm fanpage mới</div>
+    <div class="input-group">
+      <label class="input-label">Tên fanpage (để nhận biết)</label>
+      <input type="text" class="input-field" id="newPageName" placeholder="Ví dụ: Thương hiệu ABC" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Page ID</label>
+      <input type="text" class="input-field" id="newPageId" placeholder="Ví dụ: 123456789012345" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Page Access Token</label>
+      <input type="password" class="input-field" id="newPageToken" placeholder="EAAxxxxxxxxxxxxxxxx..." />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Màu avatar</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="colorPicker"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="verifyAndAddPage()">🔍 Xác minh & Thêm trang</button>
+      <button class="btn-secondary" onclick="showTab('guide')">Lấy token ở đâu?</button>
+    </div>
+    <div id="verifyResult" style="margin-top:10px;font-size:13px;"></div>
+  </div>
+</div>
+
+<!-- GUIDE -->
+<div class="settings-page" id="guideTab">
+  <div class="card">
+    <div class="card-title">📖 Cách lấy Page Access Token</div>
+    <div class="info-box blue">
+      Page Access Token cho phép ứng dụng đăng bài thay mặt fanpage của bạn thông qua Facebook Graph API.
+    </div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Vào Facebook Developers</div>
+        <div class="step-desc">Truy cập <a href="https://developers.facebook.com" target="_blank" style="color:var(--blue)">developers.facebook.com</a> → đăng nhập tài khoản Facebook của bạn.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Tạo App mới</div>
+        <div class="step-desc">Chọn <strong>My Apps → Create App</strong>. Chọn loại <strong>"Business"</strong> hoặc <strong>"None"</strong>. Đặt tên app bất kỳ.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Thêm sản phẩm Pages API</div>
+        <div class="step-desc">Trong Dashboard app → <strong>Add Product</strong> → tìm và thêm <strong>"Facebook Login"</strong> hoặc <strong>"Pages API"</strong>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Lấy token qua Graph API Explorer</div>
+        <div class="step-desc">
+          Vào <a href="https://developers.facebook.com/tools/explorer" target="_blank" style="color:var(--blue)">Graph API Explorer</a>.<br>
+          Chọn app của bạn → nhấn <strong>"Generate Access Token"</strong>.<br>
+          Cấp quyền: <code>pages_manage_posts</code>, <code>pages_read_engagement</code>.<br>
+          Chọn trang → copy <strong>Page Access Token</strong>.
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Lấy Page ID</div>
+        <div class="step-desc">Vào trang fanpage → <strong>Giới thiệu</strong> → cuộn xuống tìm mục <strong>"ID trang"</strong>. Hoặc vào <strong>Cài đặt trang → Thông tin trang</strong>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Gia hạn token (quan trọng)</div>
+        <div class="step-desc">
+          Token mặc định chỉ có hiệu lực <strong>1-2 giờ</strong>. Để dùng lâu dài, dùng long-lived token:<br>
+          Gọi API: <code>GET /oauth/access_token?grant_type=fb_exchange_token&client_id={app_id}&client_secret={secret}&fb_exchange_token={token}</code><br>
+          Token dài hạn có hiệu lực ~60 ngày.
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="info-box blue">
+      💡 <strong>Lưu ý CORS:</strong> Khi gọi Graph API từ trình duyệt, Facebook cho phép CORS từ mọi origin nên tool này hoạt động bình thường mà không cần backend.
+    </div>
+    <button class="btn-primary" onclick="showTab('settings')">→ Vào Cài đặt để thêm fanpage</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toastDot"></div>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+const STORAGE_KEY = 'fb_auto_post_pages';
+const HISTORY_KEY = 'fb_auto_post_history';
+const STATS_KEY = 'fb_auto_post_stats';
+const AVATAR_COLORS = [
+  { bg: '#E7F0FD', text: '#185FA5', label: 'Xanh' },
+  { bg: '#EAF3DE', text: '#3B6D11', label: 'Lá' },
+  { bg: '#FAEEDA', text: '#854F0B', label: 'Cam' },
+  { bg: '#FBEAF0', text: '#993556', label: 'Hồng' },
+  { bg: '#EEEDFE', text: '#534AB7', label: 'Tím' },
+  { bg: '#E1F5EE', text: '#0F6E56', label: 'Ngọc' },
+];
+let selectedColor = AVATAR_COLORS[0];
+let pages = [];
+let selected = new Set();
+let scheduleMode = 'now';
+let history = [];
+let stats = { posted: 0, failed: 0 };
+const hashtags = ['#KhuyếnMãi', '#MớiNhất', '#HotDeal', '#TinTức', '#Review', '#ViralContent', '#Sale', '#Update'];
+
+function loadData() {
+  try { pages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { pages = []; }
+  try { history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch(e) { history = []; }
+  try { stats = JSON.parse(localStorage.getItem(STATS_KEY)) || { posted: 0, failed: 0 }; } catch(e) { stats = { posted: 0, failed: 0 }; }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(pages));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function showTab(tab) {
+  document.getElementById('mainTab').classList.toggle('hidden', tab !== 'main');
+  ['settingsTab','guideTab'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach((el, i) => {
+    el.classList.toggle('active', ['main','settings','guide'][i] === tab);
+  });
+  if (tab !== 'main') document.getElementById(tab + 'Tab').classList.add('active');
+  if (tab === 'settings') renderSavedPages();
+}
+
+// Render hashtag suggestions
+function renderHashtags() {
+  const row = document.getElementById('hashtagRow');
+  row.innerHTML = '';
+  hashtags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'hashtag';
+    btn.textContent = tag;
+    btn.onclick = () => {
+      const ta = document.getElementById('postText');
+      ta.value += (ta.value && !ta.value.endsWith(' ') ? ' ' : '') + tag;
+      updatePreview(); updateCharCount();
+    };
+    row.appendChild(btn);
+  });
+}
+
+// Render color picker
+function renderColorPicker() {
+  const cp = document.getElementById('colorPicker');
+  cp.innerHTML = '';
+  AVATAR_COLORS.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = `width:28px;height:28px;border-radius:50%;background:${c.bg};cursor:pointer;border:2px solid ${selectedColor === c ? c.text : 'transparent'};transition:border 0.15s;`;
+    div.title = c.label;
+    div.onclick = () => { selectedColor = c; renderColorPicker(); };
+    cp.appendChild(div);
+  });
+}
+
+// Page list in main tab
+function renderPageList() {
+  const list = document.getElementById('pageList');
+  if (pages.length === 0) {
+    list.innerHTML = '<div class="empty-hint">Chưa có fanpage nào.<br><a href="#" onclick="showTab(\'settings\')" style="color:var(--blue)">Thêm fanpage trong Cài đặt →</a></div>';
+    updatePostBtn(); updateStats();
+    return;
+  }
+  list.innerHTML = '';
+  pages.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'page-item' + (selected.has(p.id) ? ' selected' : '');
+    div.onclick = () => { selected.has(p.id) ? selected.delete(p.id) : selected.add(p.id); renderPageList(); updatePreview(); };
+    const initials = p.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    div.innerHTML = `
+      <div class="page-avatar" style="background:${p.color.bg};color:${p.color.text}">${initials}</div>
+      <div class="page-info">
+        <div class="page-name">${p.name}</div>
+        <div class="page-meta">ID: ${p.pageId.slice(0,8)}...</div>
+      </div>
+      <div class="check-icon">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+    list.appendChild(div);
+  });
+  updatePostBtn(); updateStats();
+}
+
+function toggleAll() {
+  if (selected.size === pages.length) selected.clear();
+  else pages.forEach(p => selected.add(p.id));
+  renderPageList();
+}
+
+function updatePreview() {
+  const text = document.getElementById('postText').value;
+  const body = document.getElementById('previewBody');
+  body.textContent = text || 'Nội dung bài đăng sẽ hiện ở đây...';
+  body.classList.toggle('has-content', !!text.trim());
+  const firstSelected = pages.find(p => selected.has(p.id));
+  document.getElementById('previewPageName').textContent = firstSelected ? firstSelected.name : 'Tên fanpage';
+}
+
+function updateCharCount() {
+  const len = document.getElementById('postText').value.length;
+  const pct = Math.min((len / 63206) * 100, 100);
+  const el = document.getElementById('charCount');
+  const fill = document.getElementById('charFill');
+  el.textContent = len.toLocaleString('vi-VN');
+  el.className = 'char-count' + (len > 60000 ? ' over' : len > 45000 ? ' warn' : '');
+  fill.style.width = pct + '%';
+  fill.style.background = len > 60000 ? 'var(--red)' : len > 45000 ? 'var(--amber)' : 'var(--blue)';
+}
+
+function setSchedule(mode) {
+  scheduleMode = mode;
+  document.getElementById('nowBtn').className = 'tgl-btn' + (mode === 'now' ? ' active' : '');
+  document.getElementById('schedBtn').className = 'tgl-btn' + (mode === 'schedule' ? ' active' : '');
+  document.getElementById('schedTime').style.display = mode === 'schedule' ? 'block' : 'none';
+  updatePostBtn();
+}
+
+function updatePostBtn() {
+  const btn = document.getElementById('postBtn');
+  const txt = document.getElementById('postBtnText');
+  const n = selected.size;
+  btn.disabled = n === 0;
+  if (n === 0) txt.textContent = 'Chọn ít nhất 1 fanpage để đăng';
+  else if (scheduleMode === 'schedule') txt.textContent = `Lên lịch cho ${n} trang`;
+  else txt.textContent = `Đăng ngay lên ${n} trang`;
+}
+
+function updateStats() {
+  document.getElementById('statPosted').textContent = stats.posted;
+  document.getElementById('statFailed').textContent = stats.failed;
+  document.getElementById('statPages').textContent = selected.size;
+}
+
+function addMedia(emoji, label) {
+  const area = document.getElementById('mediaPreviewArea');
+  const div = document.createElement('div');
+  div.className = 'media-preview';
+  div.innerHTML = `${emoji} <span>${label} đã đính kèm (demo)</span><button onclick="this.parentNode.remove()">×</button>`;
+  area.appendChild(div);
+}
+
+// ---- ACTUAL FACEBOOK API CALL ----
+async function postToPage(page, message) {
+  const url = `https://graph.facebook.com/v19.0/${page.pageId}/feed`;
+  const body = { message, access_token: page.token };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.id;
+}
+
+async function submitPost() {
+  const text = document.getElementById('postText').value.trim();
+  if (!text) { showToast('Vui lòng nhập nội dung bài đăng!', 'var(--red)'); return; }
+  if (selected.size === 0) { showToast('Vui lòng chọn ít nhất 1 fanpage!', 'var(--red)'); return; }
+
+  const btn = document.getElementById('postBtn');
+  const txt = document.getElementById('postBtnText');
+  btn.disabled = true;
+  txt.innerHTML = '<div class="spinner"></div> Đang đăng bài...';
+
+  const resultLog = document.getElementById('resultLog');
+  resultLog.innerHTML = '';
+  const selectedPages = pages.filter(p => selected.has(p.id));
+
+  for (const page of selectedPages) {
+    try {
+      const postId = await postToPage(page, text);
+      stats.posted++;
+      const item = { page: page.name, text: text.slice(0,50), time: new Date().toLocaleTimeString('vi-VN'), ok: true, postId };
+      history.unshift(item);
+      addResultItem(resultLog, page.name, true, 'Post ID: ' + postId);
+    } catch(e) {
+      stats.failed++;
+      const item = { page: page.name, text: text.slice(0,50), time: new Date().toLocaleTimeString('vi-VN'), ok: false, error: e.message };
+      history.unshift(item);
+      addResultItem(resultLog, page.name, false, e.message);
+    }
+  }
+
+  saveData();
+  renderHistory();
+  updateStats();
+
+  btn.disabled = false;
+  updatePostBtn();
+  const ok = selectedPages.length;
+  showToast(`Hoàn tất! Đã xử lý ${ok} trang.`, 'var(--green)');
+}
+
+function addResultItem(container, pageName, ok, detail) {
+  const div = document.createElement('div');
+  div.className = 'result-item ' + (ok ? 'ok' : 'err');
+  div.innerHTML = ok
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span><strong>${pageName}</strong> — Đăng thành công · ${detail}</span>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span><strong>${pageName}</strong> — Lỗi: ${detail}</span>`;
+  container.appendChild(div);
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (history.length === 0) { list.innerHTML = '<div class="empty-hint">Chưa có lịch sử đăng bài</div>'; return; }
+  list.innerHTML = '';
+  history.slice(0, 10).forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'queue-item';
+    div.innerHTML = `
+      <div class="q-dot" style="background:${item.ok ? 'var(--green)' : 'var(--red)'}"></div>
+      <div class="q-text">${item.page}: ${item.text}</div>
+      <div class="q-time">${item.time}</div>
+      <button class="q-del" onclick="removeHistory(${i})" title="Xoá">×</button>`;
+    list.appendChild(div);
+  });
+}
+
+function removeHistory(i) { history.splice(i,1); saveData(); renderHistory(); }
+
+// SETTINGS: saved pages
+function renderSavedPages() {
+  const container = document.getElementById('savedPagesList');
+  if (pages.length === 0) { container.innerHTML = '<div class="empty-hint" style="margin-bottom:12px">Chưa có fanpage nào được thêm.</div>'; return; }
+  container.innerHTML = '';
+  const div2 = document.createElement('div');
+  div2.className = 'saved-pages';
+  pages.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'saved-page-row';
+    const initials = p.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    row.innerHTML = `
+      <div class="page-avatar" style="background:${p.color.bg};color:${p.color.text};width:34px;height:34px;font-size:12px">${initials}</div>
+      <div class="saved-page-info">
+        <div class="saved-page-name">${p.name}</div>
+        <div class="saved-page-id">ID: ${p.pageId}</div>
+      </div>
+      <span class="saved-page-status status-ok">Đã lưu</span>
+      <button class="btn-del-page" onclick="removePage(${i})" title="Xoá trang">×</button>`;
+    div2.appendChild(row);
+  });
+  container.appendChild(div2);
+}
+
+function removePage(i) {
+  if (!confirm('Xoá fanpage "' + pages[i].name + '"?')) return;
+  selected.delete(pages[i].id);
+  pages.splice(i,1);
+  saveData(); renderSavedPages(); renderPageList();
+  showToast('Đã xoá fanpage.', 'var(--text2)');
+}
+
+async function verifyAndAddPage() {
+  const name = document.getElementById('newPageName').value.trim();
+  const pageId = document.getElementById('newPageId').value.trim();
+  const token = document.getElementById('newPageToken').value.trim();
+  const result = document.getElementById('verifyResult');
+
+  if (!name || !pageId || !token) { result.innerHTML = '<span style="color:var(--red)">Vui lòng điền đầy đủ thông tin.</span>'; return; }
+
+  result.innerHTML = '<span style="color:var(--text3)">🔍 Đang xác minh token...</span>';
+
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name,fan_count&access_token=${token}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const id = Date.now().toString();
+    pages.push({ id, name, pageId, token, color: selectedColor, fbName: data.name, fans: data.fan_count });
+    saveData(); renderPageList(); renderSavedPages();
+
+    result.innerHTML = `<span style="color:var(--green)">✅ Xác minh thành công! Trang: <strong>${data.name}</strong> · ${(data.fan_count||0).toLocaleString('vi-VN')} người theo dõi</span>`;
+    document.getElementById('newPageName').value = '';
+    document.getElementById('newPageId').value = '';
+    document.getElementById('newPageToken').value = '';
+    showToast('Đã thêm fanpage: ' + name, 'var(--green)');
+  } catch(e) {
+    result.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`;
+  }
+}
+
+// Init
+loadData();
+renderHashtags();
+renderColorPicker();
+renderPageList();
+renderHistory();
+updateStats();
+
+const now = new Date(); now.setHours(now.getHours()+1);
+document.getElementById('schedTime').value = now.toISOString().slice(0,16);
+
+function showToast(msg, color) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastDot').style.background = color;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
