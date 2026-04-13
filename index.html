@@ -200,7 +200,6 @@
   </div>
 </nav>
 
-<!-- MAIN -->
 <div class="main-layout container" id="mainTab">
   <div>
     <div class="card">
@@ -215,10 +214,14 @@
         <span style="font-size:12px;color:var(--text3)">63,206</span>
       </div>
       <div class="hashtag-row" id="hashtagRow"></div>
+      
       <div class="media-row">
-        <button class="media-btn" onclick="addMedia('🖼️','Ảnh')">
+        <input type="file" id="imageInput" accept="image/jpeg, image/png, image/gif" style="display:none;" onchange="handleImageSelect(event)" />
+        
+        <button class="media-btn" onclick="document.getElementById('imageInput').click()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> Thêm ảnh
         </button>
+        
         <button class="media-btn" onclick="addMedia('🎬','Video')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Video
         </button>
@@ -226,6 +229,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link
         </button>
       </div>
+      
       <div id="mediaPreviewArea"></div>
 
       <div class="sep"></div>
@@ -292,7 +296,6 @@
   </div>
 </div>
 
-<!-- SETTINGS -->
 <div class="settings-page" id="settingsTab">
   <div class="card">
     <div class="card-title">⚙️ Quản lý Fanpage</div>
@@ -326,7 +329,6 @@
   </div>
 </div>
 
-<!-- GUIDE -->
 <div class="settings-page" id="guideTab">
   <div class="card">
     <div class="card-title">📖 Cách lấy Page Access Token</div>
@@ -417,6 +419,7 @@ let selected = new Set();
 let scheduleMode = 'now';
 let history = [];
 let stats = { posted: 0, failed: 0 };
+let selectedImageFile = null; // Biến lưu trữ file ảnh được chọn
 const hashtags = ['#KhuyếnMãi', '#MớiNhất', '#HotDeal', '#TinTức', '#Review', '#ViralContent', '#Sale', '#Update'];
 
 function loadData() {
@@ -549,6 +552,31 @@ function updateStats() {
   document.getElementById('statPages').textContent = selected.size;
 }
 
+// Xử lý khi người dùng chọn file ảnh
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedImageFile = file;
+
+  // Hiển thị tên file ra khu vực Preview
+  const area = document.getElementById('mediaPreviewArea');
+  area.innerHTML = '';
+  
+  const div = document.createElement('div');
+  div.className = 'media-preview';
+  div.innerHTML = `🖼️ <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${file.name}</span>
+                   <button onclick="removeImage()">×</button>`;
+  area.appendChild(div);
+}
+
+// Xoá ảnh đã chọn
+function removeImage() {
+  selectedImageFile = null;
+  document.getElementById('imageInput').value = '';
+  document.getElementById('mediaPreviewArea').innerHTML = '';
+}
+
+// Demo function cho Video/Link
 function addMedia(emoji, label) {
   const area = document.getElementById('mediaPreviewArea');
   const div = document.createElement('div');
@@ -557,7 +585,9 @@ function addMedia(emoji, label) {
   area.appendChild(div);
 }
 
-// ---- ACTUAL FACEBOOK API CALL ----
+// ---- ACTUAL FACEBOOK API CALLS ----
+
+// Hàm đăng nội dung chữ
 async function postToPage(page, message) {
   const url = `https://graph.facebook.com/v19.0/${page.pageId}/feed`;
   const body = { message, access_token: page.token };
@@ -571,10 +601,38 @@ async function postToPage(page, message) {
   return data.id;
 }
 
+// Hàm đăng ảnh kèm chữ
+async function postPhotoToPage(page, message, file) {
+  const url = `https://graph.facebook.com/v19.0/${page.pageId}/photos`;
+  
+  const formData = new FormData();
+  formData.append('access_token', page.token);
+  if (message) formData.append('message', message);
+  formData.append('source', file);
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    body: formData 
+  });
+  
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.id;
+}
+
 async function submitPost() {
   const text = document.getElementById('postText').value.trim();
-  if (!text) { showToast('Vui lòng nhập nội dung bài đăng!', 'var(--red)'); return; }
-  if (selected.size === 0) { showToast('Vui lòng chọn ít nhất 1 fanpage!', 'var(--red)'); return; }
+  
+  // Kiểm tra nếu không có text VÀ không có ảnh
+  if (!text && !selectedImageFile) { 
+    showToast('Vui lòng nhập nội dung hoặc chọn ảnh!', 'var(--red)'); 
+    return; 
+  }
+  
+  if (selected.size === 0) { 
+    showToast('Vui lòng chọn ít nhất 1 fanpage!', 'var(--red)'); 
+    return; 
+  }
 
   const btn = document.getElementById('postBtn');
   const txt = document.getElementById('postBtnText');
@@ -587,18 +645,29 @@ async function submitPost() {
 
   for (const page of selectedPages) {
     try {
-      const postId = await postToPage(page, text);
+      let postId;
+      
+      // Xử lý upload ảnh nếu có
+      if (selectedImageFile) {
+        postId = await postPhotoToPage(page, text, selectedImageFile);
+      } else {
+        postId = await postToPage(page, text);
+      }
+
       stats.posted++;
-      const item = { page: page.name, text: text.slice(0,50), time: new Date().toLocaleTimeString('vi-VN'), ok: true, postId };
+      const item = { page: page.name, text: text ? text.slice(0,50) : '[Ảnh]', time: new Date().toLocaleTimeString('vi-VN'), ok: true, postId };
       history.unshift(item);
       addResultItem(resultLog, page.name, true, 'Post ID: ' + postId);
     } catch(e) {
       stats.failed++;
-      const item = { page: page.name, text: text.slice(0,50), time: new Date().toLocaleTimeString('vi-VN'), ok: false, error: e.message };
+      const item = { page: page.name, text: text ? text.slice(0,50) : '[Ảnh]', time: new Date().toLocaleTimeString('vi-VN'), ok: false, error: e.message };
       history.unshift(item);
       addResultItem(resultLog, page.name, false, e.message);
     }
   }
+
+  // Xoá ảnh sau khi đăng thành công để chuẩn bị cho lần sau
+  if (selectedImageFile) removeImage();
 
   saveData();
   renderHistory();
