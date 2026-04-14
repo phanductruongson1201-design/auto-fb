@@ -9,84 +9,64 @@
 :root {
   --blue: #1877F2; --blue-l: #E7F0FD; --blue-m: #B0C8F9;
   --green: #1D9E75; --green-l: #E5F6F0;
-  --red: #E24B4A;   --red-l: #FDEAEA;
+  --red: #E24B4A; --red-l: #FDEAEA;
   --amber: #BA7517; --amber-l: #FEF3DC;
   --bg: #F0F2F5; --surface: #fff; --surface2: #F0F2F5;
   --border: #CDD0D5; --text: #1C1E21; --text2: #65676B; --text3: #8A8D91;
   --radius: 10px; --radius-sm: 6px; --shadow: 0 1px 4px rgba(0,0,0,.08);
 }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
-
-/* NAV */
 nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; height: 50px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 200; }
 .nav-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--blue); }
 .nav-brand svg { width: 26px; height: 26px; fill: var(--blue); }
-.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .nav-tab { padding: 5px 12px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; border: none; background: transparent; color: var(--text2); font-family: inherit; transition: all .15s; }
 .nav-tab:hover { background: var(--surface2); }
 .nav-tab.active { background: var(--blue-l); color: var(--blue); font-weight: 600; }
-.user-chip { display: flex; align-items: center; gap: 7px; padding: 4px 10px 4px 4px; background: var(--surface2); border-radius: 20px; font-size: 13px; cursor: pointer; border: 1px solid var(--border); }
-.user-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-.user-chip svg { width: 24px; height: 24px; background: var(--border); border-radius: 50%; padding: 4px; }
-
-/* PAGE VIEWS */
-.view { display: none; max-width: 1040px; margin: 0 auto; padding: 24px 16px; }
+.view { display: none; max-width: 1040px; margin: 0 auto; padding: 20px 16px; }
 .view.active { display: block; }
-.main-grid { display: grid; grid-template-columns: 1fr 330px; gap: 18px; }
+.main-grid { display: grid; grid-template-columns: 1fr 330px; gap: 16px; }
 @media(max-width:768px){ .main-grid { grid-template-columns: 1fr; } }
-
-/* CARDS */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
-.card-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
-
-/* TEXTAREA */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
+.card-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
 .post-area { width: 100%; min-height: 130px; resize: vertical; font-size: 15px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.65; transition: border-color .15s, background .15s; }
 .post-area:focus { outline: none; border-color: var(--blue); background: var(--surface); }
 .char-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 10px; }
-.char-text { font-size: 12px; color: var(--text3); min-width: 60px; }
+.char-text { font-size: 12px; color: var(--text3); min-width: 55px; }
 .char-text.warn { color: var(--amber); } .char-text.over { color: var(--red); }
 .char-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .char-fill { height: 100%; background: var(--blue); border-radius: 2px; transition: width .2s, background .2s; }
-
-/* HASHTAGS */
 .tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
-.tag { font-size: 12px; padding: 3px 9px; background: var(--blue-l); color: var(--blue); border-radius: 20px; cursor: pointer; border: none; font-family: inherit; transition: background .15s; }
+.tag { font-size: 12px; padding: 3px 9px; background: var(--blue-l); color: var(--blue); border-radius: 20px; cursor: pointer; border: none; font-family: inherit; }
 .tag:hover { background: var(--blue-m); }
-
-/* MEDIA */
 .media-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
-.media-btn { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text2); cursor: pointer; background: var(--surface); font-family: inherit; transition: all .15s; }
+.media-btn { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--text2); cursor: pointer; background: var(--surface); font-family: inherit; }
 .media-btn:hover { background: var(--surface2); }
 .media-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 6px; font-size: 13px; color: var(--text2); }
-.media-item button { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; line-height: 1; }
-
-/* SCHEDULE */
+.media-item button { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; }
 .sched-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 .toggle-grp { display: flex; background: var(--surface2); padding: 3px; border-radius: var(--radius-sm); }
 .tgl { padding: 5px 11px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text2); font-family: inherit; transition: all .15s; }
 .tgl.on { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .dt-input { padding: 6px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--surface); }
-
-/* POST BTN */
-.post-btn { width: 100%; padding: 11px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; letter-spacing: .01em; }
+.post-btn { width: 100%; padding: 11px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
 .post-btn:hover:not(:disabled) { opacity: .9; }
-.post-btn:active:not(:disabled) { transform: scale(.99); }
 .post-btn:disabled { opacity: .45; cursor: not-allowed; }
-.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* PAGES LIST */
-.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
+.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
 .page-item { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all .15s; user-select: none; }
 .page-item:hover { background: var(--surface2); }
 .page-item.sel { border-color: var(--blue); background: var(--blue-l); }
-.page-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
-.page-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.page-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.page-name { font-size: 13px; font-weight: 600; }
 .page-fans { font-size: 11px; color: var(--text3); }
+.page-token-status { font-size: 11px; margin-top: 1px; }
 .chk { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin-left: auto; flex-shrink: 0; transition: all .15s; }
 .page-item.sel .chk { background: var(--blue); border-color: var(--blue); }
-
-/* PREVIEW */
+.select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; }
+.link-btn:hover { text-decoration: underline; }
 .fb-preview { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .fb-ph { background: var(--surface2); padding: 9px 11px; display: flex; align-items: center; gap: 8px; }
 .fb-pa { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
@@ -95,78 +75,60 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .fb-ptime { font-size: 11px; color: var(--text3); }
 .fb-body { padding: 11px; font-size: 14px; line-height: 1.55; min-height: 60px; word-break: break-word; white-space: pre-wrap; color: var(--text3); font-style: italic; }
 .fb-body.has { color: var(--text); font-style: normal; }
-
-/* STATS */
 .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
 .stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 9px 6px; text-align: center; }
-.stat-n { font-size: 22px; font-weight: 700; color: var(--text); }
+.stat-n { font-size: 22px; font-weight: 700; }
 .stat-l { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-/* HISTORY */
-.hist-list { display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto; }
-.hist-item { display: flex; align-items: center; gap: 7px; padding: 6px 10px; background: var(--surface2); border-radius: var(--radius-sm); font-size: 12px; }
+.hist-list { display: flex; flex-direction: column; gap: 5px; max-height: 130px; overflow-y: auto; }
+.hist-item { display: flex; align-items: center; gap: 7px; padding: 6px 9px; background: var(--surface2); border-radius: var(--radius-sm); font-size: 12px; }
 .hdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .htext { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .htime { color: var(--text3); flex-shrink: 0; }
-.hdel { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; padding: 0 2px; }
-
-/* RESULT LOG */
+.hdel { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; }
 .res-log { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
-.res-item { display: flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: var(--radius-sm); font-size: 13px; }
+.res-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 11px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; }
 .res-item.ok  { background: var(--green-l); color: #0F6E56; }
 .res-item.err { background: var(--red-l);   color: #A32D2D; }
-
-/* LOGIN SCREEN */
-.login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 50px); padding: 24px; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 36px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
-.login-logo { width: 56px; height: 56px; background: var(--blue); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-.login-logo svg { width: 36px; height: 36px; fill: white; }
-.login-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.login-sub { font-size: 14px; color: var(--text2); margin-bottom: 28px; line-height: 1.55; }
-.login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 13px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .15s; margin-bottom: 14px; }
-.login-btn:hover { opacity: .9; }
-.login-btn svg { width: 22px; height: 22px; fill: white; }
-.login-note { font-size: 12px; color: var(--text3); line-height: 1.55; }
-.appid-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
-.appid-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
-.appid-input { width: 100%; padding: 8px 11px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); margin-bottom: 8px; transition: border-color .15s; }
-.appid-input:focus { outline: none; border-color: var(--blue); background: var(--surface); }
-.appid-hint { font-size: 11px; color: var(--text3); line-height: 1.5; }
-.appid-hint a { color: var(--blue); }
-
-/* SETTINGS / GUIDE */
-.settings-wrap { max-width: 600px; margin: 0 auto; }
-.input-group { margin-bottom: 14px; }
-.input-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: block; }
-.input-field { width: 100%; padding: 8px 11px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); transition: border-color .15s; }
-.input-field:focus { outline: none; border-color: var(--blue); background: var(--surface); }
 .info-box { padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; margin-bottom: 14px; }
 .info-box.blue   { background: var(--blue-l);  color: #185FA5; border-left: 3px solid var(--blue); }
 .info-box.amber  { background: var(--amber-l); color: var(--amber); border-left: 3px solid #E8A118; }
 .info-box.green  { background: var(--green-l); color: #0F6E56; border-left: 3px solid var(--green); }
-.info-box a { color: inherit; font-weight: 600; }
+.info-box.red    { background: var(--red-l);   color: #A32D2D; border-left: 3px solid var(--red); }
+.info-box a { color: inherit; font-weight: 700; text-decoration: none; }
+.info-box a:hover { text-decoration: underline; }
 .btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; transition: opacity .15s; }
-.btn.primary   { background: var(--blue);     color: #fff; }
+.btn.primary { background: var(--blue); color: #fff; }
 .btn.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .btn:hover { opacity: .85; }
-.sep { height: 1px; background: var(--border); margin: 16px 0; }
-.select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; }
-.link-btn:hover { text-decoration: underline; }
-.empty-hint { font-size: 13px; color: var(--text3); text-align: center; padding: 16px; }
-.empty-hint a { color: var(--blue); }
-
-/* STEP GUIDE */
+.sep { height: 1px; background: var(--border); margin: 14px 0; }
+.input-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: block; }
+.input-field { width: 100%; padding: 8px 11px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; color: var(--text); background: var(--bg); transition: border-color .15s; margin-bottom: 10px; }
+.input-field:focus { outline: none; border-color: var(--blue); background: var(--surface); }
 .step { display: flex; gap: 11px; margin-bottom: 14px; }
 .step-n { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .step-t { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.step-d { font-size: 12px; color: var(--text2); line-height: 1.55; }
-.step-d code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; color: var(--text); }
-
-/* TOAST */
+.step-d { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.step-d code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; color: var(--text); }
+.page-saved-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.page-saved-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.page-saved-info { flex: 1; min-width: 0; }
+.page-saved-name { font-size: 13px; font-weight: 600; }
+.page-saved-id { font-size: 11px; color: var(--text3); font-family: monospace; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+.badge-ok { background: var(--green-l); color: var(--green); }
+.badge-warn { background: var(--amber-l); color: var(--amber); }
+.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
+.del-btn:hover { color: var(--red); }
+.empty-hint { font-size: 13px; color: var(--text3); text-align: center; padding: 14px; }
 .toast { position: fixed; bottom: 22px; right: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 16px; font-size: 13px; display: flex; align-items: center; gap: 9px; z-index: 999; opacity: 0; transform: translateY(6px); transition: all .22s; pointer-events: none; max-width: 300px; box-shadow: var(--shadow); }
-.toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius); padding: 20px; max-width: 480px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -178,323 +140,214 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   </div>
   <div class="nav-right">
     <button class="nav-tab active" id="nt-post" onclick="showTab('post')">✏️ Đăng bài</button>
+    <button class="nav-tab" id="nt-pages" onclick="showTab('pages')">📄 Quản lý Page</button>
     <button class="nav-tab" id="nt-guide" onclick="showTab('guide')">📖 Hướng dẫn</button>
-    <div class="user-chip" id="userChip" onclick="handleLogout()" style="display:none" title="Nhấn để đăng xuất">
-      <img id="userPic" src="" alt="">
-      <span id="userName"></span>
-    </div>
   </div>
 </nav>
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+<!-- POST VIEW -->
+<div id="view-post" class="view active">
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="card-label">✏️ Nội dung bài đăng</div>
+        <textarea class="post-area" id="postText" placeholder="Viết nội dung bài đăng..." oninput="onTextChange()"></textarea>
+        <div class="char-row">
+          <span class="char-text" id="charTxt">0</span>
+          <div class="char-bar"><div class="char-fill" id="charFill" style="width:0"></div></div>
+          <span style="font-size:12px;color:var(--text3)">63,206</span>
+        </div>
+        <div class="tag-row" id="tagRow"></div>
+        <div class="media-row">
+          <button class="media-btn" onclick="addMedia('🖼️','Ảnh đính kèm')">🖼️ Ảnh</button>
+          <button class="media-btn" onclick="addMedia('🎬','Video đính kèm')">🎬 Video</button>
+          <button class="media-btn" onclick="addMedia('🔗','Link đính kèm')">🔗 Link</button>
+        </div>
+        <div id="mediaArea"></div>
+        <div class="sep"></div>
+        <div class="card-label">⏰ Lên lịch</div>
+        <div class="sched-row">
+          <div class="toggle-grp">
+            <button class="tgl on" id="tgl-now" onclick="setMode('now')">Đăng ngay</button>
+            <button class="tgl" id="tgl-sched" onclick="setMode('sched')">Lên lịch</button>
+          </div>
+          <input type="datetime-local" class="dt-input" id="schedDt" style="display:none">
+        </div>
+        <button class="post-btn" id="postBtn" onclick="doPost()" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span id="postBtnTxt">Chưa có fanpage nào</span>
+        </button>
+        <div id="resLog" class="res-log"></div>
+      </div>
     </div>
-    <h1 class="login-title">FanPage Publisher</h1>
-    <p class="login-sub">Đăng nhập Facebook để tự động lấy danh sách fanpage bạn đang quản lý và đăng bài chỉ trong vài giây.</p>
-    <button class="login-btn" id="fbLoginBtn" onclick="fbLogin()">
-      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      Đăng nhập với Facebook
-    </button>
-    <p class="login-note">Quyền được yêu cầu: <strong>pages_manage_posts</strong>, <strong>pages_read_engagement</strong>. Token chỉ lưu trên máy bạn.</p>
-    <div class="appid-section">
-      <label class="appid-label">Facebook App ID (bắt buộc)</label>
-      <input type="text" class="appid-input" id="appIdInput" placeholder="Nhập App ID của bạn..." value="">
-      <button class="btn primary" onclick="saveAppId()" style="width:100%;margin-bottom:8px">Lưu App ID & Tải SDK</button>
-      <p class="appid-hint">Chưa có App ID? <a href="#" onclick="showTab('guide')">Xem hướng dẫn tạo →</a><br>App ID là chuỗi số, ví dụ: <code style="font-size:11px;background:#f0f2f5;padding:1px 4px;border-radius:3px">1234567890123456</code></p>
+
+    <div>
+      <div class="card">
+        <div class="select-all-row">
+          <div class="card-label" style="margin:0">📄 Fanpage</div>
+          <div style="display:flex;gap:8px">
+            <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
+            <button class="link-btn" onclick="showTab('pages')" style="color:var(--text3)">+ Thêm</button>
+          </div>
+        </div>
+        <div class="page-list" id="pageList">
+          <div class="empty-hint">Chưa có fanpage.<br><a href="#" onclick="showTab('pages')" style="color:var(--blue)">Thêm page trong tab "Quản lý Page" →</a></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">👁️ Xem trước</div>
+        <div class="fb-preview">
+          <div class="fb-ph">
+            <div class="fb-pa" id="prevAvatar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <div><div class="fb-pname" id="prevName">Tên fanpage</div><div class="fb-ptime">Vừa xong · 🌐</div></div>
+          </div>
+          <div class="fb-body" id="prevBody">Nội dung bài đăng sẽ hiện ở đây...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">📊 Hôm nay</div>
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-n" id="stPosted">0</div><div class="stat-l">Đã đăng</div></div>
+          <div class="stat"><div class="stat-n" id="stFailed">0</div><div class="stat-l">Thất bại</div></div>
+          <div class="stat"><div class="stat-n" id="stSel">0</div><div class="stat-l">Đang chọn</div></div>
+        </div>
+        <div class="card-label" style="margin-bottom:8px">🕐 Lịch sử</div>
+        <div class="hist-list" id="histList"><div class="empty-hint" style="padding:8px">Chưa có lịch sử</div></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP (ẩn khi chưa login) -->
-<div id="mainApp" style="display:none">
-
-  <!-- POST VIEW -->
-  <div id="view-post" class="view active">
-    <div class="main-grid">
-      <div>
-        <div class="card">
-          <div class="card-label">✏️ Nội dung bài đăng</div>
-          <textarea class="post-area" id="postText" placeholder="Viết nội dung bài đăng..." oninput="onTextChange()"></textarea>
-          <div class="char-row">
-            <span class="char-text" id="charTxt">0</span>
-            <div class="char-bar"><div class="char-fill" id="charFill" style="width:0"></div></div>
-            <span style="font-size:12px;color:var(--text3)">63,206</span>
-          </div>
-          <div class="tag-row" id="tagRow"></div>
-          <div class="media-row">
-            <button class="media-btn" onclick="addMedia('🖼️','Ảnh đính kèm')">🖼️ Ảnh</button>
-            <button class="media-btn" onclick="addMedia('🎬','Video đính kèm')">🎬 Video</button>
-            <button class="media-btn" onclick="addMedia('🔗','Link đính kèm')">🔗 Link</button>
-          </div>
-          <div id="mediaArea"></div>
-          <div class="sep"></div>
-          <div class="card-label">⏰ Lên lịch</div>
-          <div class="sched-row">
-            <div class="toggle-grp">
-              <button class="tgl on" id="tgl-now" onclick="setMode('now')">Đăng ngay</button>
-              <button class="tgl" id="tgl-sched" onclick="setMode('sched')">Lên lịch</button>
-            </div>
-            <input type="datetime-local" class="dt-input" id="schedDt" style="display:none">
-          </div>
-          <button class="post-btn" id="postBtn" onclick="doPost()" disabled>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            <span id="postBtnTxt">Chọn ít nhất 1 fanpage</span>
-          </button>
-          <div id="resLog" class="res-log"></div>
-        </div>
+<!-- PAGES MANAGEMENT VIEW -->
+<div id="view-pages" class="view">
+  <div style="max-width:640px;margin:0 auto">
+    <div class="card">
+      <div class="card-label">📄 Các fanpage đã thêm</div>
+      <div id="savedPagesList"><div class="empty-hint">Chưa có fanpage nào. Thêm bên dưới.</div></div>
+      <div class="sep"></div>
+      <div class="card-label">➕ Thêm fanpage mới</div>
+      <div class="info-box blue">
+        Lấy <strong>Page ID</strong> và <strong>Page Access Token</strong> từ <a href="https://developers.facebook.com/tools/explorer" target="_blank">Graph API Explorer</a>. Xem tab <strong>Hướng dẫn</strong> để biết chi tiết.
       </div>
-
-      <div>
-        <div class="card">
-          <div class="select-all-row">
-            <div class="card-label" style="margin:0">📄 Fanpage của bạn</div>
-            <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
-          </div>
-          <div class="page-list" id="pageList">
-            <div class="empty-hint" id="pageListEmpty">
-              <div style="margin-bottom:8px">⏳ Đang tải danh sách fanpage...</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-label">👁️ Xem trước</div>
-          <div class="fb-preview">
-            <div class="fb-ph">
-              <div class="fb-pa" id="prevAvatar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              </div>
-              <div><div class="fb-pname" id="prevName">Tên fanpage</div><div class="fb-ptime">Vừa xong · 🌐</div></div>
-            </div>
-            <div class="fb-body" id="prevBody">Nội dung bài đăng sẽ hiện ở đây...</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-label">📊 Hôm nay</div>
-          <div class="stats-grid">
-            <div class="stat"><div class="stat-n" id="stPosted">0</div><div class="stat-l">Đã đăng</div></div>
-            <div class="stat"><div class="stat-n" id="stFailed">0</div><div class="stat-l">Thất bại</div></div>
-            <div class="stat"><div class="stat-n" id="stSel">0</div><div class="stat-l">Đang chọn</div></div>
-          </div>
-          <div class="card-label" style="margin-bottom:8px">🕐 Lịch sử</div>
-          <div class="hist-list" id="histList">
-            <div class="empty-hint">Chưa có lịch sử</div>
-          </div>
-        </div>
+      <label class="input-label">Tên hiển thị</label>
+      <input type="text" class="input-field" id="newName" placeholder="Ví dụ: Thương hiệu ABC">
+      <label class="input-label">Page ID</label>
+      <input type="text" class="input-field" id="newPageId" placeholder="Ví dụ: 123456789012345">
+      <label class="input-label">Page Access Token</label>
+      <input type="password" class="input-field" id="newToken" placeholder="EAAxxxxxxxxxxxxxxxx...">
+      <div style="display:flex;gap:8px">
+        <button class="btn primary" onclick="verifyAndAdd()" style="flex:1">🔍 Xác minh & Thêm</button>
+        <button class="btn secondary" onclick="showTab('guide')">Lấy token?</button>
       </div>
+      <div id="verifyMsg" style="margin-top:10px;font-size:13px"></div>
     </div>
   </div>
+</div>
 
-  <!-- GUIDE VIEW -->
-  <div id="view-guide" class="view">
-    <div class="settings-wrap">
-      <div class="card">
-        <div class="card-label">📖 Tạo Facebook App ID</div>
-        <div class="info-box blue">Bạn cần App ID để xác thực với Facebook Login. Miễn phí, tạo trong 5 phút.</div>
-        <div class="step"><div class="step-n">1</div><div><div class="step-t">Vào Facebook Developers</div><div class="step-d">Truy cập <a href="https://developers.facebook.com" target="_blank" style="color:var(--blue)">developers.facebook.com</a> và đăng nhập bằng tài khoản Facebook của bạn.</div></div></div>
-        <div class="step"><div class="step-n">2</div><div><div class="step-t">Tạo App mới</div><div class="step-d">Nhấn <strong>My Apps → Create App</strong>. Chọn loại <strong>"Business"</strong> hoặc <strong>"Consumer"</strong>. Đặt tên app bất kỳ (ví dụ: "My Page Poster").</div></div></div>
-        <div class="step"><div class="step-n">3</div><div><div class="step-t">Thêm Facebook Login</div><div class="step-d">Trong Dashboard → <strong>Add Product → Facebook Login → Web</strong>. Trong Site URL nhập <code>http://localhost</code> hoặc đường dẫn file HTML của bạn.</div></div></div>
-        <div class="step"><div class="step-n">4</div><div><div class="step-t">Bật quyền cần thiết</div><div class="step-d">Vào <strong>App Review → Permissions</strong>, thêm: <code>pages_manage_posts</code> và <code>pages_read_engagement</code>. Ở chế độ Development, bạn dùng được ngay với tài khoản admin của app.</div></div></div>
-        <div class="step"><div class="step-n">5</div><div><div class="step-t">Lấy App ID</div><div class="step-d">Quay về <strong>Dashboard</strong>, copy <strong>App ID</strong> (chuỗi số ở góc trên). Dán vào ô "Facebook App ID" trong trang đăng nhập của tool.</div></div></div>
-        <div class="step"><div class="step-n">6</div><div><div class="step-t">Thêm tài khoản tester (nếu cần)</div><div class="step-d">Vào <strong>Roles → Testers</strong>, thêm tài khoản Facebook bạn muốn dùng với tool. Tài khoản admin của app không cần bước này.</div></div></div>
-        <div class="sep"></div>
-        <div class="info-box amber">⚠️ <strong>App Review:</strong> Để người khác ngoài admin/testers dùng tool này, app phải qua Facebook App Review. Với mục đích cá nhân (quản lý page của chính bạn), không cần App Review.</div>
-        <div class="info-box green">✅ Token được lưu trong localStorage trên máy tính của bạn. Không gửi đến bất kỳ server nào ngoài api.facebook.com.</div>
-        <button class="btn primary" onclick="showTab('post')">← Quay lại đăng bài</button>
+<!-- GUIDE VIEW -->
+<div id="view-guide" class="view">
+  <div style="max-width:620px;margin:0 auto">
+    <div class="card">
+      <div class="card-label">📖 Cách lấy Page Access Token (không cần App Review)</div>
+      <div class="info-box green">✅ Cách này hoạt động ngay, không cần App Review, không cần backend.</div>
+
+      <div class="step">
+        <div class="step-n">1</div>
+        <div><div class="step-t">Vào Graph API Explorer</div>
+        <div class="step-d">Truy cập <a href="https://developers.facebook.com/tools/explorer" target="_blank" style="color:var(--blue);font-weight:600">developers.facebook.com/tools/explorer</a> và đăng nhập.</div></div>
       </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div><div class="step-t">Chọn App và lấy User Token</div>
+        <div class="step-d">Góc trên phải chọn App của bạn → nhấn <strong>"Generate Access Token"</strong> → cấp quyền <code>pages_manage_posts</code> và <code>pages_read_engagement</code>.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div><div class="step-t">Lấy danh sách page và token</div>
+        <div class="step-d">Trong ô query nhập: <code>/me/accounts</code> → nhấn <strong>Submit</strong>. Kết quả sẽ hiện danh sách page cùng <code>access_token</code> của từng page và <code>id</code>.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div><div class="step-t">Copy Page ID và Page Access Token</div>
+        <div class="step-d">Mỗi page trong kết quả có: <code>"id": "12345..."</code> và <code>"access_token": "EAAxx..."</code>. Copy 2 giá trị này cho từng page.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">5</div>
+        <div><div class="step-t">Thêm vào FanPage Publisher</div>
+        <div class="step-d">Vào tab <strong>"Quản lý Page"</strong> → điền tên, Page ID, Page Access Token → nhấn Xác minh & Thêm.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">6</div>
+        <div><div class="step-t">Gia hạn token (quan trọng)</div>
+        <div class="step-d">Token mặc định hết hạn sau ~1 giờ. Để dùng lâu dài, trong Graph Explorer nhấn biểu tượng <strong>"ℹ️"</strong> bên cạnh token → <strong>"Open in Access Token Tool"</strong> → <strong>"Extend Access Token"</strong> → token sẽ có hiệu lực ~60 ngày.</div></div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="info-box amber">⚠️ Token lưu trong <strong>localStorage</strong> trên máy bạn. Không chia sẻ thiết bị khi đang lưu token.</div>
+      <button class="btn primary" onclick="showTab('pages')">→ Thêm fanpage ngay</button>
     </div>
   </div>
+</div>
 
+<!-- MODAL: nhập token cho page thiếu token -->
+<div class="modal-overlay" id="tokenModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Cập nhật token</div>
+    <label class="input-label">Page Access Token mới</label>
+    <input type="password" class="input-field" id="modalToken" placeholder="EAAxxxxxxxxxxxxxxxx...">
+    <div id="modalMsg" style="font-size:13px;margin-top:4px"></div>
+    <div class="modal-footer">
+      <button class="btn secondary" onclick="closeModal()">Huỷ</button>
+      <button class="btn primary" onclick="saveModalToken()">Lưu token</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"><div class="toast-dot" id="toastDot"></div><span id="toastMsg"></span></div>
 
-<!-- FB JS SDK sẽ được load động sau khi người dùng nhập App ID -->
-<div id="fb-root"></div>
-
 <script>
-const TAGS = ['#KhuyếnMãi','#MớiNhất','#HotDeal','#TinTức','#Review','#ViralContent','#Sale','#Trending'];
-const LS_PAGES  = 'fbp_pages';
-const LS_HIST   = 'fbp_hist';
-const LS_STATS  = 'fbp_stats';
-const LS_APPID  = 'fbp_appid';
-const LS_TOKEN  = 'fbp_token';
-const LS_USER   = 'fbp_user';
+const TAGS = ['#KhuyếnMãi','#MớiNhất','#HotDeal','#TinTức','#Review','#Sale','#Trending','#Update'];
+const LS_PAGES = 'fbp_pages_v3';
+const LS_HIST  = 'fbp_hist_v3';
+const LS_STATS = 'fbp_stats_v3';
 
 let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {posted:0,failed:0};
-let fbReady = false, appId = '';
+let editingPageId = null;
 
-// ---- INIT ----
 function init() {
-  loadStorage();
-  renderTags();
-  const dt = new Date(); dt.setHours(dt.getHours()+1);
-  document.getElementById('schedDt').value = dt.toISOString().slice(0,16);
-
-  const savedId = localStorage.getItem(LS_APPID) || '';
-  document.getElementById('appIdInput').value = savedId;
-  if (savedId) {
-    appId = savedId;
-    loadSDK(savedId, checkLoginState);
-  }
-}
-
-function loadStorage() {
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
   try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { history=[]; }
   try { stats = JSON.parse(localStorage.getItem(LS_STATS)) || {posted:0,failed:0}; } catch(e) { stats={posted:0,failed:0}; }
+  renderTags();
+  renderPageList();
+  renderHistory();
+  updateStatsUI();
+  const dt = new Date(); dt.setHours(dt.getHours()+1);
+  document.getElementById('schedDt').value = dt.toISOString().slice(0,16);
 }
 
-function saveStorage() {
+function save() {
   localStorage.setItem(LS_PAGES, JSON.stringify(pages));
   localStorage.setItem(LS_HIST, JSON.stringify(history));
   localStorage.setItem(LS_STATS, JSON.stringify(stats));
 }
 
-// ---- FACEBOOK SDK ----
-function loadSDK(id, callback) {
-  if (document.getElementById('fb-sdk')) {
-    if (typeof FB !== 'undefined') { callback && callback(); return; }
-  }
-  window.fbAsyncInit = function() {
-    FB.init({ appId: id, cookie: true, xfbml: false, version: 'v19.0' });
-    fbReady = true;
-    callback && callback();
-  };
-  const s = document.createElement('script');
-  s.id = 'fb-sdk';
-  s.src = 'https://connect.facebook.net/vi_VN/sdk.js';
-  s.async = true; s.defer = true;
-  document.head.appendChild(s);
-}
-
-function saveAppId() {
-  const id = document.getElementById('appIdInput').value.trim();
-  if (!id || !/^\d{10,20}$/.test(id)) {
-    showToast('App ID không hợp lệ (chỉ gồm chữ số)', 'var(--red)'); return;
-  }
-  appId = id;
-  localStorage.setItem(LS_APPID, id);
-  showToast('Đang tải Facebook SDK...', '#888');
-  loadSDK(id, () => {
-    showToast('SDK đã sẵn sàng! Nhấn đăng nhập.', 'var(--green)');
+// ---- TABS ----
+function showTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  ['post','pages','guide'].forEach(t => {
+    const el = document.getElementById('nt-'+t);
+    if(el) el.classList.toggle('active', t===tab);
   });
+  if (tab === 'pages') renderSavedPages();
 }
 
-function checkLoginState() {
-  if (!fbReady) return;
-  const saved = localStorage.getItem(LS_TOKEN);
-  const savedUser = JSON.parse(localStorage.getItem(LS_USER) || 'null');
-  if (saved && savedUser) {
-    showApp(savedUser);
-    fetchPages(saved);
-    return;
-  }
-  FB.getLoginStatus(function(r) {
-    if (r.status === 'connected') {
-      const token = r.authResponse.accessToken;
-      FB.api('/me', {fields:'name,picture'}, function(u) {
-        localStorage.setItem(LS_TOKEN, token);
-        localStorage.setItem(LS_USER, JSON.stringify(u));
-        showApp(u);
-        fetchPages(token);
-      });
-    }
-  });
-}
-
-function fbLogin() {
-  if (!appId) { showToast('Nhập App ID trước!', 'var(--red)'); return; }
-  if (!fbReady) { showToast('SDK chưa tải xong, vui lòng đợi...', 'var(--amber)'); return; }
-  FB.login(function(r) {
-    if (r.status === 'connected') {
-      const token = r.authResponse.accessToken;
-      FB.api('/me', {fields:'name,picture'}, function(u) {
-        localStorage.setItem(LS_TOKEN, token);
-        localStorage.setItem(LS_USER, JSON.stringify(u));
-        showApp(u);
-        fetchPages(token);
-        showToast('Đăng nhập thành công!', 'var(--green)');
-      });
-    } else {
-      showToast('Đăng nhập bị huỷ hoặc thất bại.', 'var(--red)');
-    }
-  }, { scope: 'pages_manage_posts,pages_read_engagement,pages_show_list' });
-}
-
-function handleLogout() {
-  if (!confirm('Đăng xuất khỏi FanPage Publisher?')) return;
-  localStorage.removeItem(LS_TOKEN);
-  localStorage.removeItem(LS_USER);
-  pages = []; selected.clear();
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('mainApp').style.display = 'none';
-  document.getElementById('userChip').style.display = 'none';
-  showToast('Đã đăng xuất.', '#888');
-}
-
-function showApp(user) {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('userChip').style.display = 'flex';
-  const pic = user.picture?.data?.url || user.picture || '';
-  if (pic) document.getElementById('userPic').src = pic;
-  document.getElementById('userName').textContent = user.name;
-}
-
-// ---- FETCH PAGES ----
-function fetchPages(userToken) {
-  document.getElementById('pageListEmpty').innerHTML = '<div style="color:var(--text3);font-size:13px;padding:12px 0;text-align:center">⏳ Đang tải fanpage...</div>';
-  fetch(`https://graph.facebook.com/v19.0/me/accounts?fields=name,fan_count,picture&access_token=${userToken}`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.error) { showToast('Lỗi: '+data.error.message, 'var(--red)'); return; }
-      pages = (data.data || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        fans: p.fan_count || 0,
-        token: p.access_token,
-        pic: p.picture?.data?.url || ''
-      }));
-      localStorage.setItem(LS_PAGES, JSON.stringify(pages));
-      renderPageList();
-      if (pages.length === 0) {
-        document.getElementById('pageListEmpty').innerHTML = '<div class="empty-hint">Không tìm thấy fanpage nào.<br>Bạn cần là admin của ít nhất 1 page.</div>';
-      }
-    })
-    .catch(e => showToast('Không thể tải fanpage: '+e.message, 'var(--red)'));
-}
-
-// ---- RENDER PAGE LIST ----
-function renderPageList() {
-  const list = document.getElementById('pageList');
-  if (pages.length === 0) return;
-  list.innerHTML = '';
-  pages.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'page-item' + (selected.has(p.id) ? ' sel' : '');
-    div.onclick = () => { selected.has(p.id) ? selected.delete(p.id) : selected.add(p.id); renderPageList(); updatePreview(); updateBtn(); updateStatsUI(); };
-    const fanStr = p.fans >= 1000 ? (p.fans/1000).toFixed(1)+'K' : p.fans;
-    const avatarHtml = p.pic
-      ? `<img class="page-avatar" src="${p.pic}" alt="">`
-      : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue)">${p.name.slice(0,2).toUpperCase()}</div>`;
-    div.innerHTML = `${avatarHtml}<div class="page-info"><div class="page-name">${p.name}</div><div class="page-fans">${fanStr} người theo dõi</div></div><div class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>`;
-    list.appendChild(div);
-  });
-  updateBtn(); updateStatsUI();
-}
-
-function toggleAll() {
-  if (selected.size === pages.length) selected.clear();
-  else pages.forEach(p => selected.add(p.id));
-  renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
-}
-
-// ---- TEXT / PREVIEW ----
+// ---- TAGS ----
 function renderTags() {
   const row = document.getElementById('tagRow');
   TAGS.forEach(t => {
@@ -505,54 +358,90 @@ function renderTags() {
   });
 }
 
-function onTextChange() { updatePreview(); updateCharBar(); }
-
-function updateCharBar() {
-  const len = document.getElementById('postText').value.length;
+// ---- TEXT ----
+function onTextChange() {
+  const text = document.getElementById('postText').value;
+  const len = text.length;
   const pct = Math.min(len/63206*100,100);
   const el = document.getElementById('charTxt');
   el.textContent = len.toLocaleString('vi-VN');
   el.className = 'char-text'+(len>60000?' over':len>45000?' warn':'');
   document.getElementById('charFill').style.width = pct+'%';
   document.getElementById('charFill').style.background = len>60000?'var(--red)':len>45000?'var(--amber)':'var(--blue)';
-}
-
-function updatePreview() {
-  const text = document.getElementById('postText').value;
   const body = document.getElementById('prevBody');
   body.textContent = text || 'Nội dung bài đăng sẽ hiện ở đây...';
-  body.className = 'fb-body' + (text.trim() ? ' has' : '');
-  const first = pages.find(p => selected.has(p.id));
-  if (first) {
-    document.getElementById('prevName').textContent = first.name;
-    const pa = document.getElementById('prevAvatar');
-    if (first.pic) pa.innerHTML = `<img src="${first.pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-  }
+  body.className = 'fb-body'+(text.trim()?' has':'');
 }
 
-function addMedia(emoji, label) {
-  const area = document.getElementById('mediaArea');
+function addMedia(e, l) {
   const div = document.createElement('div');
   div.className = 'media-item';
-  div.innerHTML = `${emoji} ${label} <button onclick="this.parentNode.remove()">×</button>`;
-  area.appendChild(div);
+  div.innerHTML = `${e} ${l} <button onclick="this.parentNode.remove()">×</button>`;
+  document.getElementById('mediaArea').appendChild(div);
 }
 
 // ---- SCHEDULE ----
 function setMode(m) {
   schedMode = m;
-  document.getElementById('tgl-now').className = 'tgl'+(m==='now'?' on':'');
-  document.getElementById('tgl-sched').className = 'tgl'+(m==='sched'?' on':'');
-  document.getElementById('schedDt').style.display = m==='sched' ? 'block' : 'none';
+  document.getElementById('tgl-now').className='tgl'+(m==='now'?' on':'');
+  document.getElementById('tgl-sched').className='tgl'+(m==='sched'?' on':'');
+  document.getElementById('schedDt').style.display = m==='sched'?'block':'none';
   updateBtn();
+}
+
+// ---- PAGE LIST (main tab) ----
+function renderPageList() {
+  const list = document.getElementById('pageList');
+  if (!pages.length) {
+    list.innerHTML = '<div class="empty-hint">Chưa có fanpage.<br><a href="#" onclick="showTab(\'pages\')" style="color:var(--blue)">Thêm page trong "Quản lý Page" →</a></div>';
+    updateBtn(); updateStatsUI(); return;
+  }
+  list.innerHTML = '';
+  pages.forEach(p => {
+    const div = document.createElement('div');
+    const hasTok = !!p.token;
+    div.className = 'page-item'+(selected.has(p.id)?' sel':'');
+    div.onclick = () => {
+      if (!hasTok) { openTokenModal(p.id, p.name); return; }
+      selected.has(p.id) ? selected.delete(p.id) : selected.add(p.id);
+      renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
+    };
+    const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const avatarHtml = p.pic
+      ? `<img class="page-avatar" src="${p.pic}" alt="">`
+      : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue)">${initials}</div>`;
+    const fans = p.fans >= 1000 ? (p.fans/1000).toFixed(1)+'K' : (p.fans||'—');
+    const tokenBadge = hasTok
+      ? `<span class="page-token-status" style="color:var(--green)">✓ Token OK</span>`
+      : `<span class="page-token-status" style="color:var(--red)">⚠ Chưa có token — nhấn để thêm</span>`;
+    div.innerHTML = `${avatarHtml}<div style="flex:1;min-width:0"><div class="page-name">${p.name}</div><div class="page-fans">${fans} người theo dõi</div>${tokenBadge}</div><div class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>`;
+    list.appendChild(div);
+  });
+  updateBtn(); updateStatsUI();
+}
+
+function toggleAll() {
+  const withToken = pages.filter(p => p.token);
+  if (selected.size === withToken.length && withToken.length > 0) selected.clear();
+  else withToken.forEach(p => selected.add(p.id));
+  renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
+}
+
+function updatePreview() {
+  const first = pages.find(p => selected.has(p.id));
+  if (!first) return;
+  document.getElementById('prevName').textContent = first.name;
+  const pa = document.getElementById('prevAvatar');
+  if (first.pic) pa.innerHTML = `<img src="${first.pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
 }
 
 function updateBtn() {
   const n = selected.size;
   const btn = document.getElementById('postBtn');
-  const txt = document.getElementById('postBtnTxt');
   btn.disabled = n===0;
-  txt.textContent = n===0 ? 'Chọn ít nhất 1 fanpage' : (schedMode==='sched' ? `Lên lịch cho ${n} trang` : `Đăng ngay lên ${n} trang`);
+  document.getElementById('postBtnTxt').textContent = n===0
+    ? (pages.length===0 ? 'Chưa có fanpage nào' : 'Chọn ít nhất 1 fanpage')
+    : (schedMode==='sched' ? `Lên lịch cho ${n} trang` : `Đăng ngay lên ${n} trang`);
 }
 
 function updateStatsUI() {
@@ -561,7 +450,90 @@ function updateStatsUI() {
   document.getElementById('stSel').textContent = selected.size;
 }
 
-// ---- POST TO FACEBOOK ----
+// ---- SAVED PAGES (management tab) ----
+function renderSavedPages() {
+  const container = document.getElementById('savedPagesList');
+  if (!pages.length) { container.innerHTML = '<div class="empty-hint">Chưa có fanpage nào.</div>'; return; }
+  container.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'page-saved-list';
+  pages.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'page-saved-row';
+    const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const av = p.pic ? `<img class="page-avatar" src="${p.pic}" style="width:34px;height:34px" alt="">` : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue);width:34px;height:34px">${initials}</div>`;
+    row.innerHTML = `${av}<div class="page-saved-info"><div class="page-saved-name">${p.name}</div><div class="page-saved-id">ID: ${p.id}</div></div><span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span><button class="btn secondary" style="font-size:12px;padding:5px 10px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}')">✏️ Token</button><button class="del-btn" onclick="deletePage(${i})">×</button>`;
+    list.appendChild(row);
+  });
+  container.appendChild(list);
+}
+
+function deletePage(i) {
+  if (!confirm(`Xoá page "${pages[i].name}"?`)) return;
+  selected.delete(pages[i].id);
+  pages.splice(i,1);
+  save(); renderSavedPages(); renderPageList();
+  showToast('Đã xoá page.', '#888');
+}
+
+// ---- ADD PAGE ----
+async function verifyAndAdd() {
+  const name = document.getElementById('newName').value.trim();
+  const pageId = document.getElementById('newPageId').value.trim();
+  const token = document.getElementById('newToken').value.trim();
+  const msg = document.getElementById('verifyMsg');
+  if (!name || !pageId || !token) { msg.innerHTML = '<span style="color:var(--red)">Vui lòng điền đầy đủ.</span>'; return; }
+  msg.innerHTML = '<span style="color:var(--text3)">🔍 Đang xác minh...</span>';
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name,fan_count,picture&access_token=${token}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const existing = pages.findIndex(p => p.id === pageId);
+    const pageObj = { id: pageId, name: name||data.name, fans: data.fan_count||0, token, pic: data.picture?.data?.url||'' };
+    if (existing >= 0) pages[existing] = pageObj;
+    else pages.push(pageObj);
+    save(); renderPageList(); renderSavedPages();
+    msg.innerHTML = `<span style="color:var(--green)">✅ Thêm thành công: <strong>${data.name}</strong> · ${(data.fan_count||0).toLocaleString('vi-VN')} followers</span>`;
+    document.getElementById('newName').value = '';
+    document.getElementById('newPageId').value = '';
+    document.getElementById('newToken').value = '';
+    showToast('Đã thêm: '+name, 'var(--green)');
+  } catch(e) {
+    msg.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`;
+  }
+}
+
+// ---- TOKEN MODAL ----
+function openTokenModal(id, name) {
+  editingPageId = id;
+  document.getElementById('modalTitle').textContent = 'Cập nhật token — ' + name;
+  document.getElementById('modalToken').value = '';
+  document.getElementById('modalMsg').innerHTML = '';
+  document.getElementById('tokenModal').classList.add('open');
+}
+function closeModal() { document.getElementById('tokenModal').classList.remove('open'); }
+
+async function saveModalToken() {
+  const token = document.getElementById('modalToken').value.trim();
+  const msg = document.getElementById('modalMsg');
+  if (!token) { msg.innerHTML = '<span style="color:var(--red)">Nhập token!</span>'; return; }
+  msg.innerHTML = '<span style="color:var(--text3)">Đang xác minh...</span>';
+  const page = pages.find(p => p.id === editingPageId);
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${editingPageId}?fields=name,fan_count,picture&access_token=${token}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    page.token = token;
+    page.fans = data.fan_count || page.fans;
+    page.pic = data.picture?.data?.url || page.pic;
+    save(); closeModal(); renderPageList(); renderSavedPages();
+    showToast('Token đã cập nhật cho: '+page.name, 'var(--green)');
+  } catch(e) {
+    msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`;
+  }
+}
+
+// ---- POST ----
 async function postToPage(page, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
     method: 'POST',
@@ -581,9 +553,7 @@ async function doPost() {
 
   const btn = document.getElementById('postBtn');
   btn.disabled = true;
-  document.getElementById('postBtnTxt').innerHTML = '';
-  document.getElementById('postBtn').insertAdjacentHTML('afterbegin', '<div class="spinner"></div>');
-  document.getElementById('postBtnTxt').textContent = ' Đang đăng...';
+  btn.innerHTML = '<div class="spinner"></div><span>Đang đăng...</span>';
 
   const log = document.getElementById('resLog');
   log.innerHTML = '';
@@ -592,34 +562,34 @@ async function doPost() {
     try {
       const postId = await postToPage(page, text);
       stats.posted++;
-      history.unshift({ page: page.name, text: text.slice(0,45), time: new Date().toLocaleTimeString('vi-VN'), ok: true });
+      history.unshift({page:page.name, text:text.slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
       const d = document.createElement('div');
       d.className = 'res-item ok';
-      d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng thành công · ID: ${postId}`;
+      d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng thành công · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
-      history.unshift({ page: page.name, text: text.slice(0,45), time: new Date().toLocaleTimeString('vi-VN'), ok: false });
+      history.unshift({page:page.name, text:text.slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div');
       d.className = 'res-item err';
-      d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}`;
+      const hint = e.message.includes('OAuthException') || e.message.includes('token')
+        ? ' (Token hết hạn — cần cập nhật token mới)' : '';
+      d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}${hint}`;
       log.appendChild(d);
     }
   }
 
-  saveStorage();
-  renderHistory();
-  updateStatsUI();
+  save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
-  document.getElementById('postBtn').querySelector('.spinner')?.remove();
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="postBtnTxt"></span>`;
   updateBtn();
-  showToast(`Hoàn tất ${selPages.length} trang!`, 'var(--green)');
+  showToast('Hoàn tất '+selPages.length+' trang!', 'var(--green)');
 }
 
 // ---- HISTORY ----
 function renderHistory() {
   const list = document.getElementById('histList');
-  if (!history.length) { list.innerHTML = '<div class="empty-hint">Chưa có lịch sử</div>'; return; }
+  if (!history.length) { list.innerHTML = '<div class="empty-hint" style="padding:8px">Chưa có lịch sử</div>'; return; }
   list.innerHTML = '';
   history.slice(0,10).forEach((item,i) => {
     const div = document.createElement('div');
@@ -628,17 +598,7 @@ function renderHistory() {
     list.appendChild(div);
   });
 }
-
-function removeHist(i) { history.splice(i,1); saveStorage(); renderHistory(); }
-
-// ---- TABS ----
-function showTab(tab) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-'+tab).classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  const tabMap = {post:'nt-post',guide:'nt-guide'};
-  if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
-}
+function removeHist(i) { history.splice(i,1); save(); renderHistory(); }
 
 // ---- TOAST ----
 function showToast(msg, color) {
@@ -646,8 +606,8 @@ function showToast(msg, color) {
   document.getElementById('toastMsg').textContent = msg;
   document.getElementById('toastDot').style.background = color;
   t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 init();
