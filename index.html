@@ -55,7 +55,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .post-btn:disabled { opacity: .45; cursor: not-allowed; }
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; }
 .page-item { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all .15s; user-select: none; }
 .page-item:hover { background: var(--surface2); }
 .page-item.sel { border-color: var(--blue); background: var(--blue-l); }
@@ -179,6 +179,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
           Thời gian nghỉ giữa mỗi trang: 
           <input type="number" id="delayInput" value="30" min="2" max="600" class="input-field delay-input"> giây
         </div>
+
         <div class="sep"></div>
         <div class="card-label">⏰ Lên lịch</div>
         <div class="sched-row">
@@ -265,43 +266,14 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 <div id="view-guide" class="view">
   <div style="max-width:620px;margin:0 auto">
     <div class="card">
-      <div class="card-label">📖 Cách lấy Page Access Token (không cần App Review)</div>
+      <div class="card-label">📖 Cách lấy Page Access Token</div>
       <div class="info-box green">✅ Cách này hoạt động ngay, không cần App Review, không cần backend.</div>
 
       <div class="step">
         <div class="step-n">1</div>
-        <div><div class="step-t">Vào Graph API Explorer</div>
-        <div class="step-d">Truy cập <a href="https://developers.facebook.com/tools/explorer" target="_blank" style="color:var(--blue);font-weight:600">developers.facebook.com/tools/explorer</a> và đăng nhập.</div></div>
+        <div><div class="step-t">Bơm data từ Console</div>
+        <div class="step-d">Sử dụng tính năng copy JSON từ Graph API và dán vào Console (F12) như đã hướng dẫn trước đó.</div></div>
       </div>
-      <div class="step">
-        <div class="step-n">2</div>
-        <div><div class="step-t">Chọn App và lấy User Token</div>
-        <div class="step-d">Góc trên phải chọn App của bạn → nhấn <strong>"Generate Access Token"</strong> → cấp quyền <code>pages_manage_posts</code> và <code>pages_read_engagement</code>.</div></div>
-      </div>
-      <div class="step">
-        <div class="step-n">3</div>
-        <div><div class="step-t">Lấy danh sách page và token</div>
-        <div class="step-d">Trong ô query nhập: <code>/me/accounts</code> → nhấn <strong>Submit</strong>. Kết quả sẽ hiện danh sách page cùng <code>access_token</code> của từng page và <code>id</code>.</div></div>
-      </div>
-      <div class="step">
-        <div class="step-n">4</div>
-        <div><div class="step-t">Copy Page ID và Page Access Token</div>
-        <div class="step-d">Mỗi page trong kết quả có: <code>"id": "12345..."</code> và <code>"access_token": "EAAxx..."</code>. Copy 2 giá trị này cho từng page.</div></div>
-      </div>
-      <div class="step">
-        <div class="step-n">5</div>
-        <div><div class="step-t">Thêm vào FanPage Publisher</div>
-        <div class="step-d">Vào tab <strong>"Quản lý Page"</strong> → điền tên, Page ID, Page Access Token → nhấn Xác minh & Thêm.</div></div>
-      </div>
-      <div class="step">
-        <div class="step-n">6</div>
-        <div><div class="step-t">Gia hạn token (quan trọng)</div>
-        <div class="step-d">Token mặc định hết hạn sau ~1 giờ. Để dùng lâu dài, trong Graph Explorer nhấn biểu tượng <strong>"ℹ️"</strong> bên cạnh token → <strong>"Open in Access Token Tool"</strong> → <strong>"Extend Access Token"</strong> → token sẽ có hiệu lực ~60 ngày.</div></div>
-      </div>
-
-      <div class="sep"></div>
-      <div class="info-box amber">⚠️ Token lưu trong <strong>localStorage</strong> trên máy bạn. Không chia sẻ thiết bị khi đang lưu token.</div>
-      <button class="btn primary" onclick="showTab('pages')">→ Thêm fanpage ngay</button>
     </div>
   </div>
 </div>
@@ -323,6 +295,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 
 <script>
 const TAGS = ['#KhuyếnMãi','#MớiNhất','#HotDeal','#TinTức','#Review','#Sale','#Trending','#Update'];
+// Vẫn sử dụng key fbp_pages_v3 để bảo toàn 200+ pages cũ của bạn
 const LS_PAGES = 'fbp_pages_v3';
 const LS_HIST  = 'fbp_hist_v3';
 const LS_STATS = 'fbp_stats_v3';
@@ -331,17 +304,13 @@ let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {
 let editingPageId = null;
 let selectedImageFiles = [];
 
-// Hàm Sleep (Nghỉ giữa các lần đăng)
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function init() {
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
   try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { history=[]; }
   try { stats = JSON.parse(localStorage.getItem(LS_STATS)) || {posted:0,failed:0}; } catch(e) { stats={posted:0,failed:0}; }
-  renderTags();
-  renderPageList();
-  renderHistory();
-  updateStatsUI();
+  renderTags(); renderPageList(); renderHistory(); updateStatsUI();
   const dt = new Date(); dt.setHours(dt.getHours()+1);
   document.getElementById('schedDt').value = dt.toISOString().slice(0,16);
 }
@@ -352,7 +321,6 @@ function save() {
   localStorage.setItem(LS_STATS, JSON.stringify(stats));
 }
 
-// ---- TABS ----
 function showTab(tab) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-'+tab).classList.add('active');
@@ -363,7 +331,6 @@ function showTab(tab) {
   if (tab === 'pages') renderSavedPages();
 }
 
-// ---- TAGS ----
 function renderTags() {
   const row = document.getElementById('tagRow');
   TAGS.forEach(t => {
@@ -374,7 +341,6 @@ function renderTags() {
   });
 }
 
-// ---- TEXT & MEDIA ----
 function onTextChange() {
   const text = document.getElementById('postText').value;
   const len = text.length;
@@ -393,6 +359,12 @@ function handleImageSelect(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
   selectedImageFiles = selectedImageFiles.concat(files);
+  
+  // Hiển thị nhắc nhở nhẹ nếu chọn lố 10 ảnh
+  if (selectedImageFiles.length > 10) {
+      showToast('Đã chọn >10 ảnh. Tool sẽ tự động chuyển sang chế độ tạo Album!', 'var(--amber)');
+  }
+  
   renderImagePreviews();
   document.getElementById('imageInput').value = '';
 }
@@ -421,7 +393,6 @@ function addMedia(e, l) {
   document.getElementById('mediaArea').appendChild(div);
 }
 
-// ---- SCHEDULE ----
 function setMode(m) {
   schedMode = m;
   document.getElementById('tgl-now').className='tgl'+(m==='now'?' on':'');
@@ -430,7 +401,6 @@ function setMode(m) {
   updateBtn();
 }
 
-// ---- PAGE LIST (main tab) ----
 function renderPageList() {
   const list = document.getElementById('pageList');
   if (!pages.length) {
@@ -491,7 +461,6 @@ function updateStatsUI() {
   document.getElementById('stSel').textContent = selected.size;
 }
 
-// ---- SAVED PAGES (management tab) ----
 function renderSavedPages() {
   const container = document.getElementById('savedPagesList');
   if (!pages.length) { container.innerHTML = '<div class="empty-hint">Chưa có fanpage nào.</div>'; return; }
@@ -503,7 +472,7 @@ function renderSavedPages() {
     row.className = 'page-saved-row';
     const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const av = p.pic ? `<img class="page-avatar" src="${p.pic}" style="width:34px;height:34px" alt="">` : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue);width:34px;height:34px">${initials}</div>`;
-    row.innerHTML = `${av}<div class="page-saved-info"><div class="page-saved-name">${p.name}</div><div class="page-saved-id">ID: ${p.id}</div></div><span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span><button class="btn secondary" style="font-size:12px;padding:5px 10px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}')">✏️ Token</button><button class="del-btn" onclick="deletePage(${i})">×</button>`;
+    row.innerHTML = `${av}<div class="page-saved-info"><div class="page-saved-name">${p.name}</div><div class="page-saved-id">ID: ${p.id}</div></div><span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span><button class="btn secondary" style="font-size:12px;padding:5px 10px;margin-right:5px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}')">✏️ Token</button><button class="del-btn" onclick="deletePage(${i})">×</button>`;
     list.appendChild(row);
   });
   container.appendChild(list);
@@ -511,19 +480,15 @@ function renderSavedPages() {
 
 function deletePage(i) {
   if (!confirm(`Xoá page "${pages[i].name}"?`)) return;
-  selected.delete(pages[i].id);
-  pages.splice(i,1);
-  save(); renderSavedPages(); renderPageList();
-  showToast('Đã xoá page.', '#888');
+  selected.delete(pages[i].id); pages.splice(i,1); save(); renderSavedPages(); renderPageList();
 }
 
-// ---- ADD PAGE ----
 async function verifyAndAdd() {
   const name = document.getElementById('newName').value.trim();
   const pageId = document.getElementById('newPageId').value.trim();
   const token = document.getElementById('newToken').value.trim();
   const msg = document.getElementById('verifyMsg');
-  if (!name || !pageId || !token) { msg.innerHTML = '<span style="color:var(--red)">Vui lòng điền đầy đủ.</span>'; return; }
+  if (!pageId || !token) { msg.innerHTML = '<span style="color:var(--red)">Vui lòng điền đủ thông tin.</span>'; return; }
   msg.innerHTML = '<span style="color:var(--text3)">🔍 Đang xác minh...</span>';
   try {
     const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name,fan_count,picture&access_token=${token}`);
@@ -531,25 +496,16 @@ async function verifyAndAdd() {
     if (data.error) throw new Error(data.error.message);
     const existing = pages.findIndex(p => p.id === pageId);
     const pageObj = { id: pageId, name: name||data.name, fans: data.fan_count||0, token, pic: data.picture?.data?.url||'' };
-    if (existing >= 0) pages[existing] = pageObj;
-    else pages.push(pageObj);
+    if (existing >= 0) pages[existing] = pageObj; else pages.push(pageObj);
     save(); renderPageList(); renderSavedPages();
-    msg.innerHTML = `<span style="color:var(--green)">✅ Thêm thành công: <strong>${data.name}</strong> · ${(data.fan_count||0).toLocaleString('vi-VN')} followers</span>`;
-    document.getElementById('newName').value = '';
-    document.getElementById('newPageId').value = '';
-    document.getElementById('newToken').value = '';
-    showToast('Đã thêm: '+name, 'var(--green)');
-  } catch(e) {
-    msg.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`;
-  }
+    msg.innerHTML = `<span style="color:var(--green)">✅ Thêm thành công: <strong>${data.name}</strong></span>`;
+    document.getElementById('newName').value = ''; document.getElementById('newPageId').value = ''; document.getElementById('newToken').value = '';
+  } catch(e) { msg.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`; }
 }
 
-// ---- TOKEN MODAL ----
 function openTokenModal(id, name) {
-  editingPageId = id;
-  document.getElementById('modalTitle').textContent = 'Cập nhật token — ' + name;
-  document.getElementById('modalToken').value = '';
-  document.getElementById('modalMsg').innerHTML = '';
+  editingPageId = id; document.getElementById('modalTitle').textContent = 'Cập nhật token — ' + name;
+  document.getElementById('modalToken').value = ''; document.getElementById('modalMsg').innerHTML = '';
   document.getElementById('tokenModal').classList.add('open');
 }
 function closeModal() { document.getElementById('tokenModal').classList.remove('open'); }
@@ -564,21 +520,17 @@ async function saveModalToken() {
     const res = await fetch(`https://graph.facebook.com/v19.0/${editingPageId}?fields=name,fan_count,picture&access_token=${token}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
-    page.token = token;
-    page.fans = data.fan_count || page.fans;
-    page.pic = data.picture?.data?.url || page.pic;
-    save(); closeModal(); renderPageList(); renderSavedPages();
-    showToast('Token đã cập nhật cho: '+page.name, 'var(--green)');
-  } catch(e) {
-    msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`;
-  }
+    page.token = token; page.fans = data.fan_count || page.fans; page.pic = data.picture?.data?.url || page.pic;
+    save(); closeModal(); renderPageList(); renderSavedPages(); showToast('Token đã cập nhật!', 'var(--green)');
+  } catch(e) { msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`; }
 }
 
-// ---- POST APIs ----
+// ---- POST APIs CỐT LÕI ----
+
+// 1. Post text bình thường
 async function postToPage(page, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, access_token: page.token })
   });
   const data = await res.json();
@@ -586,6 +538,7 @@ async function postToPage(page, message) {
   return data.id;
 }
 
+// 2. Upload ảnh ẩn để lấy ID (Dùng cho < 10 ảnh)
 async function uploadPhotoUnpublished(page, file) {
   const formData = new FormData();
   formData.append('access_token', page.token);
@@ -598,13 +551,14 @@ async function uploadPhotoUnpublished(page, file) {
   return data.id;
 }
 
-async function postWithMultiplePhotos(page, message, files) {
+// 3. Đăng bài với Attached_Media (Giới hạn max 10 ảnh)
+async function postWithMultiplePhotos(page, message, files, btnEl) {
   const mediaIds = [];
-  for (let file of files) {
-    const id = await uploadPhotoUnpublished(page, file);
-    mediaIds.push(id);
+  for (let i = 0; i < files.length; i++) {
+    if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang up ảnh ${i+1}/${files.length} (${page.name})...</span>`;
+    mediaIds.push(await uploadPhotoUnpublished(page, files[i]));
   }
-  
+  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang chốt đăng bài (${page.name})...</span>`;
   const body = {
     message: message,
     access_token: page.token,
@@ -612,38 +566,62 @@ async function postWithMultiplePhotos(page, message, files) {
   };
   
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
-    method: 'POST', 
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
   });
   const data = await res.json(); 
   if (data.error) throw new Error(data.error.message);
   return data.id;
 }
 
-// Tự động Comment sau khi đăng
-async function autoComment(postId, pageToken, message) {
-  const res = await fetch(`https://graph.facebook.com/v19.0/${postId}/comments`, {
+// 4. MỚI: Tự động gom vào Album (Dùng cho > 10 ảnh đến 50 ảnh)
+async function postLargeGallery(page, message, files, btnEl) {
+  // Bước 1: Tạo Album mới với nội dung bài viết
+  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang khởi tạo Album (${page.name})...</span>`;
+  
+  let albumName = message ? (message.substring(0, 35) + "...") : "Album Cập Nhật";
+  const albumRes = await fetch(`https://graph.facebook.com/v19.0/${page.id}/albums`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: message, access_token: pageToken })
+    body: JSON.stringify({ name: albumName, message: message, access_token: page.token })
+  });
+  const albumData = await albumRes.json();
+  if (albumData.error) throw new Error(albumData.error.message);
+  
+  const albumId = albumData.id;
+
+  // Bước 2: Bắn liên tục các ảnh vào Album đó
+  for (let i = 0; i < files.length; i++) {
+     if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang up ảnh ${i+1}/${files.length} vào Album...</span>`;
+     const formData = new FormData();
+     formData.append('access_token', page.token);
+     formData.append('source', files[i]);
+     
+     const photoRes = await fetch(`https://graph.facebook.com/v19.0/${albumId}/photos`, { method: 'POST', body: formData });
+     const photoData = await photoRes.json();
+     if (photoData.error) throw new Error(photoData.error.message);
+  }
+  
+  return albumId; // Trả về ID của Album để tiếp tục comment nếu cần
+}
+
+
+// 5. Tự động Comment mồi
+async function autoComment(postId, pageToken, message) {
+  const res = await fetch(`https://graph.facebook.com/v19.0/${postId}/comments`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: message, access_token: pageToken })
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
   return data.id;
 }
 
-// ---- DO POST PROCESS ----
+// ---- QUÁ TRÌNH CHẠY CHÍNH (DO POST) ----
 async function doPost() {
   const text = document.getElementById('postText').value.trim();
   const commentText = document.getElementById('commentText').value.trim();
   let delaySec = parseInt(document.getElementById('delayInput').value) || 30;
   
-  // Ràng buộc kiểm tra nội dung
-  if (!text && selectedImageFiles.length === 0) { 
-    showToast('Vui lòng nhập nội dung hoặc thêm ảnh!', 'var(--red)'); 
-    return; 
-  }
+  if (!text && selectedImageFiles.length === 0) { showToast('Vui lòng nhập nội dung hoặc thêm ảnh!', 'var(--red)'); return; }
   
   const selPages = pages.filter(p => selected.has(p.id));
   if (!selPages.length) return;
@@ -656,17 +634,23 @@ async function doPost() {
 
   for (let i = 0; i < selPages.length; i++) {
     const page = selPages[i];
-    btn.innerHTML = `<div class="spinner"></div><span>Đang đăng lên: ${page.name}...</span>`;
+    btn.innerHTML = `<div class="spinner"></div><span>Đang chuẩn bị đăng lên: ${page.name}...</span>`;
 
     try {
       let postId;
-      if (selectedImageFiles.length > 0) {
-        postId = await postWithMultiplePhotos(page, text, selectedImageFiles);
+      
+      // Logic phân luồng ảnh
+      if (selectedImageFiles.length > 10) {
+        // Lớn hơn 10 ảnh -> Tự động chuyển qua tạo Album
+        postId = await postLargeGallery(page, text, selectedImageFiles, btn);
+      } else if (selectedImageFiles.length > 0) {
+        // Dưới hoặc bằng 10 ảnh -> Đăng bài Feed bình thường
+        postId = await postWithMultiplePhotos(page, text, selectedImageFiles, btn);
       } else {
+        // Chỉ có Text
         postId = await postToPage(page, text);
       }
 
-      // Xử lý Auto Comment
       let cmtStatus = '';
       if (commentText) {
          try { 
@@ -678,23 +662,19 @@ async function doPost() {
       }
       
       stats.posted++;
-      history.unshift({page:page.name, text:(text || '[Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
-      const d = document.createElement('div');
-      d.className = 'res-item ok';
+      history.unshift({page:page.name, text:(text || '[Album Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
+      const d = document.createElement('div'); d.className = 'res-item ok';
       d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng OK${cmtStatus} · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
-      history.unshift({page:page.name, text:(text || '[Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
-      const d = document.createElement('div');
-      d.className = 'res-item err';
-      const hint = e.message.includes('OAuthException') || e.message.includes('token')
-        ? ' (Token hết hạn — cần cập nhật token mới)' : '';
+      history.unshift({page:page.name, text:(text || '[Lỗi đăng]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
+      const d = document.createElement('div'); d.className = 'res-item err';
+      const hint = e.message.includes('OAuthException') || e.message.includes('token') ? ' (Cần cập nhật token mới)' : '';
       d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}${hint}`;
       log.appendChild(d);
     }
 
-    // Thời gian nghỉ chống Checkpoint (trừ page cuối cùng không cần nghỉ)
     if (i < selPages.length - 1) {
        for(let s = delaySec; s > 0; s--) {
           btn.innerHTML = `<div class="spinner"></div><span>Đang nghỉ ${s}s tránh Checkpoint...</span>`;
@@ -703,10 +683,7 @@ async function doPost() {
     }
   }
 
-  // Clear danh sách ảnh sau khi up thành công
-  selectedImageFiles = [];
-  renderImagePreviews();
-
+  selectedImageFiles = []; renderImagePreviews();
   save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="postBtnTxt"></span>`;
@@ -714,28 +691,21 @@ async function doPost() {
   showToast('Hoàn tất '+selPages.length+' trang!', 'var(--green)');
 }
 
-// ---- HISTORY ----
 function renderHistory() {
   const list = document.getElementById('histList');
   if (!history.length) { list.innerHTML = '<div class="empty-hint" style="padding:8px">Chưa có lịch sử</div>'; return; }
   list.innerHTML = '';
   history.slice(0,15).forEach((item,i) => {
-    const div = document.createElement('div');
-    div.className = 'hist-item';
+    const div = document.createElement('div'); div.className = 'hist-item';
     div.innerHTML = `<span class="hdot" style="background:${item.ok?'var(--green)':'var(--red)'}"></span><span class="htext">${item.page}: ${item.text}</span><span class="htime">${item.time}</span><button class="hdel" onclick="removeHist(${i})">×</button>`;
     list.appendChild(div);
   });
 }
 function removeHist(i) { history.splice(i,1); save(); renderHistory(); }
 
-// ---- TOAST ----
 function showToast(msg, color) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  document.getElementById('toastDot').style.background = color;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 3500);
+  const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = msg; document.getElementById('toastDot').style.background = color;
+  t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 init();
