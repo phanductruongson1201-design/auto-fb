@@ -25,7 +25,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .nav-tab.active { background: var(--blue-l); color: var(--blue); font-weight: 600; }
 .view { display: none; max-width: 1040px; margin: 0 auto; padding: 20px 16px; }
 .view.active { display: block; }
-.main-grid { display: grid; grid-template-columns: 1fr 330px; gap: 16px; }
+.main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
 @media(max-width:768px){ .main-grid { grid-template-columns: 1fr; } }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
 .card-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
@@ -55,7 +55,13 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .post-btn:disabled { opacity: .45; cursor: not-allowed; }
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; }
+
+/* PAGE LIST & GROUPS */
+.page-list { display: flex; flex-direction: column; gap: 6px; max-height: 500px; overflow-y: auto; padding-right: 4px; }
+.group-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); padding: 8px 12px; border-radius: var(--radius-sm); margin: 10px 0 4px 0; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.group-title { font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; }
+.group-btn { font-size: 11px; color: var(--blue); background: none; border: 1px solid var(--blue-m); border-radius: 4px; padding: 3px 8px; cursor: pointer; font-weight: 600; }
+.group-btn:hover { background: var(--blue-l); }
 .page-item { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all .15s; user-select: none; }
 .page-item:hover { background: var(--surface2); }
 .page-item.sel { border-color: var(--blue); background: var(--blue-l); }
@@ -63,11 +69,12 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .page-name { font-size: 13px; font-weight: 600; }
 .page-fans { font-size: 11px; color: var(--text3); }
 .page-token-status { font-size: 11px; margin-top: 1px; }
-.chk { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin-left: auto; flex-shrink: 0; transition: all .15s; }
+.chk { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin-left: auto; flex-shrink: 0; transition: all .15s; background: var(--surface); }
 .page-item.sel .chk { background: var(--blue); border-color: var(--blue); }
 .select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; }
+.link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; font-weight: 600; }
 .link-btn:hover { text-decoration: underline; }
+
 .fb-preview { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .fb-ph { background: var(--surface2); padding: 9px 11px; display: flex; align-items: center; gap: 8px; }
 .fb-pa { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
@@ -114,17 +121,18 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .page-saved-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
 .page-saved-info { flex: 1; min-width: 0; }
 .page-saved-name { font-size: 13px; font-weight: 600; }
-.page-saved-id { font-size: 11px; color: var(--text3); font-family: monospace; }
-.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+.page-saved-course { font-size: 11px; color: #185FA5; background: var(--blue-l); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 3px; font-weight: 600; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; font-weight: 600; }
 .badge-ok { background: var(--green-l); color: var(--green); }
 .badge-warn { background: var(--amber-l); color: var(--amber); }
-.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
+.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 4px; }
 .del-btn:hover { color: var(--red); }
 .empty-hint { font-size: 13px; color: var(--text3); text-align: center; padding: 14px; }
 .toast { position: fixed; bottom: 22px; right: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 16px; font-size: 13px; display: flex; align-items: center; gap: 9px; z-index: 999; opacity: 0; transform: translateY(6px); transition: all .22s; pointer-events: none; max-width: 300px; box-shadow: var(--shadow); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .delay-input { width: 70px; margin: 0; padding: 6px 10px; text-align: center; display: inline-block; }
+
 /* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
 .modal-overlay.open { display: flex; }
@@ -163,7 +171,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
         <div class="media-row">
           <input type="file" id="imageInput" accept="image/*" multiple style="display:none;" onchange="handleImageSelect(event)">
           <button class="media-btn" onclick="document.getElementById('imageInput').click()">🖼️ Ảnh</button>
-          
           <button class="media-btn" onclick="addMedia('🎬','Video đính kèm')">🎬 Video</button>
           <button class="media-btn" onclick="addMedia('🔗','Link đính kèm')">🔗 Link</button>
         </div>
@@ -198,14 +205,15 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
     </div>
 
     <div>
-      <div class="card">
-        <div class="select-all-row">
-          <div class="card-label" style="margin:0">📄 Fanpage</div>
+      <div class="card" style="padding-right: 8px;">
+        <div class="select-all-row" style="padding-right: 8px;">
+          <div class="card-label" style="margin:0">📄 Danh sách Fanpage</div>
           <div style="display:flex;gap:8px">
             <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
             <button class="link-btn" onclick="showTab('pages')" style="color:var(--text3)">+ Thêm</button>
           </div>
         </div>
+        
         <div class="page-list" id="pageList">
           <div class="empty-hint">Chưa có fanpage.<br><a href="#" onclick="showTab('pages')" style="color:var(--blue)">Thêm page trong tab "Quản lý Page" →</a></div>
         </div>
@@ -239,22 +247,34 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 </div>
 
 <div id="view-pages" class="view">
-  <div style="max-width:640px;margin:0 auto">
+  <div style="max-width:680px;margin:0 auto">
     <div class="card">
-      <div class="card-label">📄 Các fanpage đã thêm</div>
+      <div class="card-label">📄 Các fanpage đã lưu</div>
       <div id="savedPagesList"><div class="empty-hint">Chưa có fanpage nào. Thêm bên dưới.</div></div>
+      
       <div class="sep"></div>
       <div class="card-label">➕ Thêm fanpage mới</div>
       <div class="info-box blue">
-        Lấy <strong>Page ID</strong> và <strong>Page Access Token</strong> từ <a href="https://developers.facebook.com/tools/explorer" target="_blank">Graph API Explorer</a>. Xem tab <strong>Hướng dẫn</strong> để biết chi tiết.
+        Lấy <strong>Page ID</strong> và <strong>Page Access Token</strong> từ <a href="https://developers.facebook.com/tools/explorer" target="_blank">Graph API Explorer</a>.
       </div>
-      <label class="input-label">Tên hiển thị</label>
-      <input type="text" class="input-field" id="newName" placeholder="Ví dụ: Thương hiệu ABC">
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px">
+         <div>
+            <label class="input-label">Tên Fanpage</label>
+            <input type="text" class="input-field" id="newName" placeholder="Thương hiệu ABC">
+         </div>
+         <div>
+            <label class="input-label">Nhóm / Khóa học (Tùy chọn)</label>
+            <input type="text" class="input-field" id="newCourse" placeholder="Ví dụ: Khóa MC Cơ Bản">
+         </div>
+      </div>
+      
       <label class="input-label">Page ID</label>
       <input type="text" class="input-field" id="newPageId" placeholder="Ví dụ: 123456789012345">
       <label class="input-label">Page Access Token</label>
       <input type="password" class="input-field" id="newToken" placeholder="EAAxxxxxxxxxxxxxxxx...">
-      <div style="display:flex;gap:8px">
+      
+      <div style="display:flex;gap:8px; margin-top: 10px;">
         <button class="btn primary" onclick="verifyAndAdd()" style="flex:1">🔍 Xác minh & Thêm</button>
         <button class="btn secondary" onclick="showTab('guide')">Lấy token?</button>
       </div>
@@ -266,13 +286,17 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 <div id="view-guide" class="view">
   <div style="max-width:620px;margin:0 auto">
     <div class="card">
-      <div class="card-label">📖 Cách lấy Page Access Token</div>
-      <div class="info-box green">✅ Cách này hoạt động ngay, không cần App Review, không cần backend.</div>
-
+      <div class="card-label">📖 Hướng dẫn nhanh</div>
+      <div class="info-box green">✅ Cách lấy Token hoạt động ngay, không cần App Review, không cần backend.</div>
       <div class="step">
         <div class="step-n">1</div>
+        <div><div class="step-t">Vào Graph API Explorer</div>
+        <div class="step-d">Truy cập <a href="https://developers.facebook.com/tools/explorer" target="_blank" style="color:var(--blue);font-weight:600">developers.facebook.com/tools/explorer</a> và đăng nhập.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
         <div><div class="step-t">Bơm data từ Console</div>
-        <div class="step-d">Sử dụng tính năng copy JSON từ Graph API và dán vào Console (F12) như đã hướng dẫn trước đó.</div></div>
+        <div class="step-d">Sử dụng tính năng copy JSON từ Graph API và dán vào Console (F12) như đã hướng dẫn trước đó để thêm 200+ trang cùng lúc.</div></div>
       </div>
     </div>
   </div>
@@ -280,13 +304,18 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
-    <div class="modal-title" id="modalTitle">Cập nhật token</div>
-    <label class="input-label">Page Access Token mới</label>
-    <input type="password" class="input-field" id="modalToken" placeholder="EAAxxxxxxxxxxxxxxxx...">
+    <div class="modal-title" id="modalTitle">Chỉnh sửa Fanpage</div>
+    
+    <label class="input-label">Đổi Nhóm / Khóa học</label>
+    <input type="text" class="input-field" id="modalCourse" placeholder="Nhập tên khóa học (VD: Khóa MC)">
+    
+    <label class="input-label" style="margin-top: 10px;">Cập nhật Page Access Token (Để trống nếu chỉ đổi nhóm)</label>
+    <input type="password" class="input-field" id="modalToken" placeholder="Chỉ nhập khi token cũ đã hết hạn...">
+    
     <div id="modalMsg" style="font-size:13px;margin-top:4px"></div>
     <div class="modal-footer">
       <button class="btn secondary" onclick="closeModal()">Huỷ</button>
-      <button class="btn primary" onclick="saveModalToken()">Lưu token</button>
+      <button class="btn primary" onclick="saveModalToken()">💾 Lưu thay đổi</button>
     </div>
   </div>
 </div>
@@ -295,7 +324,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 
 <script>
 const TAGS = ['#KhuyếnMãi','#MớiNhất','#HotDeal','#TinTức','#Review','#Sale','#Trending','#Update'];
-// Vẫn sử dụng key fbp_pages_v3 để bảo toàn 200+ pages cũ của bạn
 const LS_PAGES = 'fbp_pages_v3';
 const LS_HIST  = 'fbp_hist_v3';
 const LS_STATS = 'fbp_stats_v3';
@@ -310,6 +338,11 @@ function init() {
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
   try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { history=[]; }
   try { stats = JSON.parse(localStorage.getItem(LS_STATS)) || {posted:0,failed:0}; } catch(e) { stats={posted:0,failed:0}; }
+  
+  // Chuẩn hóa dữ liệu cũ (nếu chưa có course thì gán mặc định)
+  pages.forEach(p => { if(!p.course) p.course = 'Chưa phân loại'; });
+  save();
+
   renderTags(); renderPageList(); renderHistory(); updateStatsUI();
   const dt = new Date(); dt.setHours(dt.getHours()+1);
   document.getElementById('schedDt').value = dt.toISOString().slice(0,16);
@@ -359,12 +392,7 @@ function handleImageSelect(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
   selectedImageFiles = selectedImageFiles.concat(files);
-  
-  // Hiển thị nhắc nhở nhẹ nếu chọn lố 10 ảnh
-  if (selectedImageFiles.length > 10) {
-      showToast('Đã chọn >10 ảnh. Tool sẽ tự động chuyển sang chế độ tạo Album!', 'var(--amber)');
-  }
-  
+  if (selectedImageFiles.length > 10) showToast('Đã chọn >10 ảnh. Sẽ tự động gom thành Album!', 'var(--amber)');
   renderImagePreviews();
   document.getElementById('imageInput').value = '';
 }
@@ -387,8 +415,7 @@ function removeImage(index) {
 }
 
 function addMedia(e, l) {
-  const div = document.createElement('div');
-  div.className = 'media-item';
+  const div = document.createElement('div'); div.className = 'media-item';
   div.innerHTML = `${e} ${l} <button onclick="this.parentNode.remove()">×</button>`;
   document.getElementById('mediaArea').appendChild(div);
 }
@@ -401,34 +428,76 @@ function setMode(m) {
   updateBtn();
 }
 
+// ---- MAIN TAB: RENDER NHÓM (COURSE) ----
 function renderPageList() {
   const list = document.getElementById('pageList');
   if (!pages.length) {
     list.innerHTML = '<div class="empty-hint">Chưa có fanpage.<br><a href="#" onclick="showTab(\'pages\')" style="color:var(--blue)">Thêm page trong "Quản lý Page" →</a></div>';
     updateBtn(); updateStatsUI(); return;
   }
+  
   list.innerHTML = '';
+  
+  // Nhóm các page theo course
+  const groups = {};
   pages.forEach(p => {
-    const div = document.createElement('div');
-    const hasTok = !!p.token;
-    div.className = 'page-item'+(selected.has(p.id)?' sel':'');
-    div.onclick = () => {
-      if (!hasTok) { openTokenModal(p.id, p.name); return; }
-      selected.has(p.id) ? selected.delete(p.id) : selected.add(p.id);
-      renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
-    };
-    const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const avatarHtml = p.pic
-      ? `<img class="page-avatar" src="${p.pic}" alt="">`
-      : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue)">${initials}</div>`;
-    const fans = p.fans >= 1000 ? (p.fans/1000).toFixed(1)+'K' : (p.fans||'—');
-    const tokenBadge = hasTok
-      ? `<span class="page-token-status" style="color:var(--green)">✓ Token OK</span>`
-      : `<span class="page-token-status" style="color:var(--red)">⚠ Chưa có token — nhấn để thêm</span>`;
-    div.innerHTML = `${avatarHtml}<div style="flex:1;min-width:0"><div class="page-name">${p.name}</div><div class="page-fans">${fans} người theo dõi</div>${tokenBadge}</div><div class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>`;
-    list.appendChild(div);
+     const c = p.course || 'Chưa phân loại';
+     if (!groups[c]) groups[c] = [];
+     groups[c].push(p);
   });
+
+  // Hiển thị từng nhóm
+  Object.keys(groups).sort().forEach(courseName => {
+     const pagesInGroup = groups[courseName];
+     
+     // 1. In Tiêu đề nhóm
+     const header = document.createElement('div');
+     header.className = 'group-header';
+     header.innerHTML = `
+        <span class="group-title">🏷️ ${courseName} <span style="color:var(--text3); font-weight:normal">(${pagesInGroup.length})</span></span>
+        <button class="group-btn" onclick="toggleGroup('${courseName.replace(/'/g,"\\'")}')">Chọn nhóm này</button>
+     `;
+     list.appendChild(header);
+
+     // 2. In các page trong nhóm đó
+     pagesInGroup.forEach(p => {
+        const div = document.createElement('div');
+        const hasTok = !!p.token;
+        div.className = 'page-item'+(selected.has(p.id)?' sel':'');
+        div.onclick = () => {
+          if (!hasTok) { openTokenModal(p.id, p.name, p.course); return; }
+          selected.has(p.id) ? selected.delete(p.id) : selected.add(p.id);
+          renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
+        };
+        const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        const avatarHtml = p.pic ? `<img class="page-avatar" src="${p.pic}" alt="">` : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue)">${initials}</div>`;
+        const fans = p.fans >= 1000 ? (p.fans/1000).toFixed(1)+'K' : (p.fans||'—');
+        const tokenBadge = hasTok ? `<span class="page-token-status" style="color:var(--green)">✓ Token OK</span>` : `<span class="page-token-status" style="color:var(--red)">⚠ Chưa có token — nhấn để thêm</span>`;
+        div.innerHTML = `${avatarHtml}<div style="flex:1;min-width:0"><div class="page-name">${p.name}</div><div class="page-fans">${fans} theo dõi</div>${tokenBadge}</div><div class="chk"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>`;
+        list.appendChild(div);
+     });
+  });
+
   updateBtn(); updateStatsUI();
+}
+
+// Hàm chọn tất cả page của một Group cụ thể
+function toggleGroup(courseName) {
+   const pagesInGroup = pages.filter(p => (p.course || 'Chưa phân loại') === courseName && p.token);
+   if (pagesInGroup.length === 0) return;
+   
+   // Kiểm tra xem nhóm này đã được chọn hết chưa
+   const allSelected = pagesInGroup.every(p => selected.has(p.id));
+   
+   if (allSelected) {
+       // Bỏ chọn cả nhóm
+       pagesInGroup.forEach(p => selected.delete(p.id));
+   } else {
+       // Chọn tất cả trong nhóm
+       pagesInGroup.forEach(p => selected.add(p.id));
+   }
+   
+   renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
 }
 
 function toggleAll() {
@@ -451,7 +520,7 @@ function updateBtn() {
   const btn = document.getElementById('postBtn');
   btn.disabled = n===0;
   document.getElementById('postBtnTxt').textContent = n===0
-    ? (pages.length===0 ? 'Chưa có fanpage nào' : 'Chọn ít nhất 1 fanpage')
+    ? (pages.length===0 ? 'Chưa có fanpage' : 'Chọn ít nhất 1 fanpage')
     : (schedMode==='sched' ? `Lên lịch cho ${n} trang` : `Đăng ngay lên ${n} trang`);
 }
 
@@ -461,18 +530,37 @@ function updateStatsUI() {
   document.getElementById('stSel').textContent = selected.size;
 }
 
+// ---- SAVED PAGES (management tab) ----
 function renderSavedPages() {
   const container = document.getElementById('savedPagesList');
   if (!pages.length) { container.innerHTML = '<div class="empty-hint">Chưa có fanpage nào.</div>'; return; }
   container.innerHTML = '';
   const list = document.createElement('div');
   list.className = 'page-saved-list';
-  pages.forEach((p, i) => {
+  
+  // Vẫn sắp xếp danh sách theo khóa học cho dễ nhìn
+  const sortedPages = [...pages].sort((a,b) => (a.course||'').localeCompare(b.course||''));
+
+  sortedPages.forEach(p => {
     const row = document.createElement('div');
     row.className = 'page-saved-row';
     const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const av = p.pic ? `<img class="page-avatar" src="${p.pic}" style="width:34px;height:34px" alt="">` : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue);width:34px;height:34px">${initials}</div>`;
-    row.innerHTML = `${av}<div class="page-saved-info"><div class="page-saved-name">${p.name}</div><div class="page-saved-id">ID: ${p.id}</div></div><span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span><button class="btn secondary" style="font-size:12px;padding:5px 10px;margin-right:5px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}')">✏️ Token</button><button class="del-btn" onclick="deletePage(${i})">×</button>`;
+    
+    // Tìm index thật trong mảng gốc để xóa chính xác
+    const trueIndex = pages.findIndex(op => op.id === p.id);
+    
+    row.innerHTML = `
+      ${av}
+      <div class="page-saved-info">
+         <div class="page-saved-name">${p.name}</div>
+         <div class="page-saved-course">${p.course}</div>
+         <div class="page-saved-id" style="margin-top:3px">ID: ${p.id}</div>
+      </div>
+      <span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span>
+      <button class="btn secondary" style="font-size:12px;padding:5px 10px;margin-right:5px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}', '${p.course}')">✏️ Chỉnh sửa</button>
+      <button class="del-btn" onclick="deletePage(${trueIndex})">×</button>
+    `;
     list.appendChild(row);
   });
   container.appendChild(list);
@@ -485,49 +573,73 @@ function deletePage(i) {
 
 async function verifyAndAdd() {
   const name = document.getElementById('newName').value.trim();
+  const course = document.getElementById('newCourse').value.trim() || 'Chưa phân loại';
   const pageId = document.getElementById('newPageId').value.trim();
   const token = document.getElementById('newToken').value.trim();
   const msg = document.getElementById('verifyMsg');
-  if (!pageId || !token) { msg.innerHTML = '<span style="color:var(--red)">Vui lòng điền đủ thông tin.</span>'; return; }
+  
+  if (!pageId || !token) { msg.innerHTML = '<span style="color:var(--red)">Vui lòng điền đủ ID và Token.</span>'; return; }
   msg.innerHTML = '<span style="color:var(--text3)">🔍 Đang xác minh...</span>';
+  
   try {
     const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name,fan_count,picture&access_token=${token}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
+    
     const existing = pages.findIndex(p => p.id === pageId);
-    const pageObj = { id: pageId, name: name||data.name, fans: data.fan_count||0, token, pic: data.picture?.data?.url||'' };
+    const pageObj = { id: pageId, name: name||data.name, course: course, fans: data.fan_count||0, token, pic: data.picture?.data?.url||'' };
+    
     if (existing >= 0) pages[existing] = pageObj; else pages.push(pageObj);
+    
     save(); renderPageList(); renderSavedPages();
     msg.innerHTML = `<span style="color:var(--green)">✅ Thêm thành công: <strong>${data.name}</strong></span>`;
-    document.getElementById('newName').value = ''; document.getElementById('newPageId').value = ''; document.getElementById('newToken').value = '';
+    document.getElementById('newName').value = ''; document.getElementById('newPageId').value = ''; document.getElementById('newToken').value = ''; document.getElementById('newCourse').value = '';
   } catch(e) { msg.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`; }
 }
 
-function openTokenModal(id, name) {
-  editingPageId = id; document.getElementById('modalTitle').textContent = 'Cập nhật token — ' + name;
-  document.getElementById('modalToken').value = ''; document.getElementById('modalMsg').innerHTML = '';
+// ---- MODAL ĐỔI NHÓM / ĐỔI TOKEN ----
+function openTokenModal(id, name, course) {
+  editingPageId = id; 
+  document.getElementById('modalTitle').textContent = 'Chỉnh sửa — ' + name;
+  document.getElementById('modalCourse').value = course || '';
+  document.getElementById('modalToken').value = '';
+  document.getElementById('modalMsg').innerHTML = '';
   document.getElementById('tokenModal').classList.add('open');
 }
 function closeModal() { document.getElementById('tokenModal').classList.remove('open'); }
 
 async function saveModalToken() {
   const token = document.getElementById('modalToken').value.trim();
+  const course = document.getElementById('modalCourse').value.trim() || 'Chưa phân loại';
   const msg = document.getElementById('modalMsg');
-  if (!token) { msg.innerHTML = '<span style="color:var(--red)">Nhập token!</span>'; return; }
-  msg.innerHTML = '<span style="color:var(--text3)">Đang xác minh...</span>';
   const page = pages.find(p => p.id === editingPageId);
-  try {
-    const res = await fetch(`https://graph.facebook.com/v19.0/${editingPageId}?fields=name,fan_count,picture&access_token=${token}`);
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    page.token = token; page.fans = data.fan_count || page.fans; page.pic = data.picture?.data?.url || page.pic;
-    save(); closeModal(); renderPageList(); renderSavedPages(); showToast('Token đã cập nhật!', 'var(--green)');
-  } catch(e) { msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`; }
+  
+  msg.innerHTML = '<span style="color:var(--text3)">Đang cập nhật...</span>';
+
+  // Nếu người dùng nhập Token mới -> Phải xác minh lại Token
+  if (token) {
+      try {
+        const res = await fetch(`https://graph.facebook.com/v19.0/${editingPageId}?fields=name,fan_count,picture&access_token=${token}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        
+        page.token = token;
+        page.fans = data.fan_count || page.fans;
+        page.pic = data.picture?.data?.url || page.pic;
+      } catch(e) { 
+        msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`; 
+        return; // Dừng lại nếu lỗi token
+      }
+  }
+
+  // Cập nhật Tên khóa học (bất kể có đổi token hay không)
+  page.course = course;
+  
+  save(); closeModal(); renderPageList(); renderSavedPages(); 
+  showToast('Đã lưu thay đổi!', 'var(--green)');
 }
 
 // ---- POST APIs CỐT LÕI ----
-
-// 1. Post text bình thường
 async function postToPage(page, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -538,140 +650,99 @@ async function postToPage(page, message) {
   return data.id;
 }
 
-// 2. Upload ảnh ẩn để lấy ID (Dùng cho < 10 ảnh)
 async function uploadPhotoUnpublished(page, file) {
   const formData = new FormData();
-  formData.append('access_token', page.token);
-  formData.append('published', 'false'); 
-  formData.append('source', file);
-  
+  formData.append('access_token', page.token); formData.append('published', 'false'); formData.append('source', file);
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/photos`, { method: 'POST', body: formData });
   const data = await res.json(); 
-  if (data.error) throw new Error(data.error.message);
-  return data.id;
+  if (data.error) throw new Error(data.error.message); return data.id;
 }
 
-// 3. Đăng bài với Attached_Media (Giới hạn max 10 ảnh)
 async function postWithMultiplePhotos(page, message, files, btnEl) {
   const mediaIds = [];
   for (let i = 0; i < files.length; i++) {
     if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang up ảnh ${i+1}/${files.length} (${page.name})...</span>`;
     mediaIds.push(await uploadPhotoUnpublished(page, files[i]));
   }
-  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang chốt đăng bài (${page.name})...</span>`;
-  const body = {
-    message: message,
-    access_token: page.token,
-    attached_media: mediaIds.map(id => ({ media_fbid: id }))
-  };
+  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang chốt bài (${page.name})...</span>`;
+  const body = { message: message, access_token: page.token, attached_media: mediaIds.map(id => ({ media_fbid: id })) };
   
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
   });
   const data = await res.json(); 
-  if (data.error) throw new Error(data.error.message);
-  return data.id;
+  if (data.error) throw new Error(data.error.message); return data.id;
 }
 
-// 4. MỚI: Tự động gom vào Album (Dùng cho > 10 ảnh đến 50 ảnh)
 async function postLargeGallery(page, message, files, btnEl) {
-  // Bước 1: Tạo Album mới với nội dung bài viết
-  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang khởi tạo Album (${page.name})...</span>`;
-  
+  if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Khởi tạo Album (${page.name})...</span>`;
   let albumName = message ? (message.substring(0, 35) + "...") : "Album Cập Nhật";
   const albumRes = await fetch(`https://graph.facebook.com/v19.0/${page.id}/albums`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: albumName, message: message, access_token: page.token })
   });
   const albumData = await albumRes.json();
   if (albumData.error) throw new Error(albumData.error.message);
   
   const albumId = albumData.id;
-
-  // Bước 2: Bắn liên tục các ảnh vào Album đó
   for (let i = 0; i < files.length; i++) {
-     if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang up ảnh ${i+1}/${files.length} vào Album...</span>`;
+     if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Up ảnh ${i+1}/${files.length} vào Album...</span>`;
      const formData = new FormData();
-     formData.append('access_token', page.token);
-     formData.append('source', files[i]);
-     
+     formData.append('access_token', page.token); formData.append('source', files[i]);
      const photoRes = await fetch(`https://graph.facebook.com/v19.0/${albumId}/photos`, { method: 'POST', body: formData });
      const photoData = await photoRes.json();
      if (photoData.error) throw new Error(photoData.error.message);
   }
-  
-  return albumId; // Trả về ID của Album để tiếp tục comment nếu cần
+  return albumId;
 }
 
-
-// 5. Tự động Comment mồi
 async function autoComment(postId, pageToken, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${postId}/comments`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: message, access_token: pageToken })
   });
   const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.id;
+  if (data.error) throw new Error(data.error.message); return data.id;
 }
 
-// ---- QUÁ TRÌNH CHẠY CHÍNH (DO POST) ----
+// ---- QUÁ TRÌNH CHẠY CHÍNH ----
 async function doPost() {
   const text = document.getElementById('postText').value.trim();
   const commentText = document.getElementById('commentText').value.trim();
   let delaySec = parseInt(document.getElementById('delayInput').value) || 30;
   
-  if (!text && selectedImageFiles.length === 0) { showToast('Vui lòng nhập nội dung hoặc thêm ảnh!', 'var(--red)'); return; }
-  
+  if (!text && selectedImageFiles.length === 0) { showToast('Nhập nội dung hoặc thêm ảnh!', 'var(--red)'); return; }
   const selPages = pages.filter(p => selected.has(p.id));
   if (!selPages.length) return;
 
-  const btn = document.getElementById('postBtn');
-  btn.disabled = true;
-  
-  const log = document.getElementById('resLog');
-  log.innerHTML = '';
+  const btn = document.getElementById('postBtn'); btn.disabled = true;
+  const log = document.getElementById('resLog'); log.innerHTML = '';
 
   for (let i = 0; i < selPages.length; i++) {
     const page = selPages[i];
-    btn.innerHTML = `<div class="spinner"></div><span>Đang chuẩn bị đăng lên: ${page.name}...</span>`;
+    btn.innerHTML = `<div class="spinner"></div><span>Đang chuẩn bị: ${page.name}...</span>`;
 
     try {
       let postId;
-      
-      // Logic phân luồng ảnh
-      if (selectedImageFiles.length > 10) {
-        // Lớn hơn 10 ảnh -> Tự động chuyển qua tạo Album
-        postId = await postLargeGallery(page, text, selectedImageFiles, btn);
-      } else if (selectedImageFiles.length > 0) {
-        // Dưới hoặc bằng 10 ảnh -> Đăng bài Feed bình thường
-        postId = await postWithMultiplePhotos(page, text, selectedImageFiles, btn);
-      } else {
-        // Chỉ có Text
-        postId = await postToPage(page, text);
-      }
+      if (selectedImageFiles.length > 10) postId = await postLargeGallery(page, text, selectedImageFiles, btn);
+      else if (selectedImageFiles.length > 0) postId = await postWithMultiplePhotos(page, text, selectedImageFiles, btn);
+      else postId = await postToPage(page, text);
 
       let cmtStatus = '';
       if (commentText) {
-         try { 
-            await autoComment(postId, page.token, commentText); 
-            cmtStatus = ' (+ 1 Bình luận)'; 
-         } catch(ce) { 
-            cmtStatus = ` (Lỗi cmt: ${ce.message})`; 
-         }
+         try { await autoComment(postId, page.token, commentText); cmtStatus = ' (+ 1 Bình luận)'; } 
+         catch(ce) { cmtStatus = ` (Lỗi cmt: ${ce.message})`; }
       }
       
       stats.posted++;
-      history.unshift({page:page.name, text:(text || '[Album Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
+      history.unshift({page:page.name, text:(text || '[Album]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
       const d = document.createElement('div'); d.className = 'res-item ok';
       d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng OK${cmtStatus} · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
-      history.unshift({page:page.name, text:(text || '[Lỗi đăng]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
+      history.unshift({page:page.name, text:(text || '[Lỗi]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div'); d.className = 'res-item err';
-      const hint = e.message.includes('OAuthException') || e.message.includes('token') ? ' (Cần cập nhật token mới)' : '';
-      d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}${hint}`;
+      d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}`;
       log.appendChild(d);
     }
 
@@ -687,8 +758,7 @@ async function doPost() {
   save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="postBtnTxt"></span>`;
-  updateBtn();
-  showToast('Hoàn tất '+selPages.length+' trang!', 'var(--green)');
+  updateBtn(); showToast('Hoàn tất '+selPages.length+' trang!', 'var(--green)');
 }
 
 function renderHistory() {
@@ -702,12 +772,10 @@ function renderHistory() {
   });
 }
 function removeHist(i) { history.splice(i,1); save(); renderHistory(); }
-
 function showToast(msg, color) {
   const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = msg; document.getElementById('toastDot').style.background = color;
   t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
-
 init();
 </script>
 </body>
