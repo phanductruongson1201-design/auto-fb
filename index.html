@@ -44,6 +44,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .media-btn:hover { background: var(--surface2); }
 .media-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 6px; font-size: 13px; color: var(--text2); }
 .media-item button { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; }
+.media-item button:hover { color: var(--red); }
 .sched-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 .toggle-grp { display: flex; background: var(--surface2); padding: 3px; border-radius: var(--radius-sm); }
 .tgl { padding: 5px 11px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text2); font-family: inherit; transition: all .15s; }
@@ -145,7 +146,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   </div>
 </nav>
 
-<!-- POST VIEW -->
 <div id="view-post" class="view active">
   <div class="main-grid">
     <div>
@@ -158,12 +158,17 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
           <span style="font-size:12px;color:var(--text3)">63,206</span>
         </div>
         <div class="tag-row" id="tagRow"></div>
+        
         <div class="media-row">
-          <button class="media-btn" onclick="addMedia('🖼️','Ảnh đính kèm')">🖼️ Ảnh</button>
+          <input type="file" id="imageInput" accept="image/*" multiple style="display:none;" onchange="handleImageSelect(event)">
+          <button class="media-btn" onclick="document.getElementById('imageInput').click()">🖼️ Ảnh</button>
+          
           <button class="media-btn" onclick="addMedia('🎬','Video đính kèm')">🎬 Video</button>
           <button class="media-btn" onclick="addMedia('🔗','Link đính kèm')">🔗 Link</button>
         </div>
+        
         <div id="mediaArea"></div>
+        
         <div class="sep"></div>
         <div class="card-label">⏰ Lên lịch</div>
         <div class="sched-row">
@@ -222,7 +227,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   </div>
 </div>
 
-<!-- PAGES MANAGEMENT VIEW -->
 <div id="view-pages" class="view">
   <div style="max-width:640px;margin:0 auto">
     <div class="card">
@@ -248,7 +252,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   </div>
 </div>
 
-<!-- GUIDE VIEW -->
 <div id="view-guide" class="view">
   <div style="max-width:620px;margin:0 auto">
     <div class="card">
@@ -293,7 +296,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   </div>
 </div>
 
-<!-- MODAL: nhập token cho page thiếu token -->
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Cập nhật token</div>
@@ -317,6 +319,9 @@ const LS_STATS = 'fbp_stats_v3';
 
 let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {posted:0,failed:0};
 let editingPageId = null;
+
+// Thêm biến quản lý ảnh
+let selectedImageFiles = [];
 
 function init() {
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
@@ -358,7 +363,7 @@ function renderTags() {
   });
 }
 
-// ---- TEXT ----
+// ---- TEXT & MEDIA ----
 function onTextChange() {
   const text = document.getElementById('postText').value;
   const len = text.length;
@@ -373,6 +378,33 @@ function onTextChange() {
   body.className = 'fb-body'+(text.trim()?' has':'');
 }
 
+// Hàm hỗ trợ chọn nhiều ảnh
+function handleImageSelect(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  selectedImageFiles = selectedImageFiles.concat(files);
+  renderImagePreviews();
+  document.getElementById('imageInput').value = ''; // Reset input
+}
+
+function renderImagePreviews() {
+  const area = document.getElementById('mediaArea');
+  area.innerHTML = '';
+  selectedImageFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'media-item';
+    div.innerHTML = `🖼️ <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${file.name}</span>
+                     <button onclick="removeImage(${index})">×</button>`;
+    area.appendChild(div);
+  });
+}
+
+function removeImage(index) {
+  selectedImageFiles.splice(index, 1);
+  renderImagePreviews();
+}
+
+// Demo function cho nút Video/Link
 function addMedia(e, l) {
   const div = document.createElement('div');
   div.className = 'media-item';
@@ -533,7 +565,7 @@ async function saveModalToken() {
   }
 }
 
-// ---- POST ----
+// ---- POST APIs ----
 async function postToPage(page, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
     method: 'POST',
@@ -545,9 +577,53 @@ async function postToPage(page, message) {
   return data.id;
 }
 
+// API Tải ảnh lên ẩn (không hiện ngay lên wall) để lấy ID
+async function uploadPhotoUnpublished(page, file) {
+  const formData = new FormData();
+  formData.append('access_token', page.token);
+  formData.append('published', 'false'); 
+  formData.append('source', file);
+  
+  const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/photos`, { method: 'POST', body: formData });
+  const data = await res.json(); 
+  if (data.error) throw new Error(data.error.message);
+  return data.id;
+}
+
+// API gom nhóm nhiều ảnh vào 1 bài đăng
+async function postWithMultiplePhotos(page, message, files) {
+  const mediaIds = [];
+  for (let file of files) {
+    const id = await uploadPhotoUnpublished(page, file);
+    mediaIds.push(id);
+  }
+  
+  const body = {
+    message: message,
+    access_token: page.token,
+    attached_media: mediaIds.map(id => ({ media_fbid: id }))
+  };
+  
+  const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json(); 
+  if (data.error) throw new Error(data.error.message);
+  return data.id;
+}
+
+// ---- DO POST PROCESS ----
 async function doPost() {
   const text = document.getElementById('postText').value.trim();
-  if (!text) { showToast('Nhập nội dung bài đăng!', 'var(--red)'); return; }
+  
+  // Ràng buộc kiểm tra nội dung
+  if (!text && selectedImageFiles.length === 0) { 
+    showToast('Vui lòng nhập nội dung hoặc thêm ảnh!', 'var(--red)'); 
+    return; 
+  }
+  
   const selPages = pages.filter(p => selected.has(p.id));
   if (!selPages.length) return;
 
@@ -560,16 +636,22 @@ async function doPost() {
 
   for (const page of selPages) {
     try {
-      const postId = await postToPage(page, text);
+      let postId;
+      if (selectedImageFiles.length > 0) {
+        postId = await postWithMultiplePhotos(page, text, selectedImageFiles);
+      } else {
+        postId = await postToPage(page, text);
+      }
+      
       stats.posted++;
-      history.unshift({page:page.name, text:text.slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
+      history.unshift({page:page.name, text:(text || '[Tệp đính kèm]').slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
       const d = document.createElement('div');
       d.className = 'res-item ok';
       d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng thành công · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
-      history.unshift({page:page.name, text:text.slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
+      history.unshift({page:page.name, text:(text || '[Tệp đính kèm]').slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div');
       d.className = 'res-item err';
       const hint = e.message.includes('OAuthException') || e.message.includes('token')
@@ -578,6 +660,10 @@ async function doPost() {
       log.appendChild(d);
     }
   }
+
+  // Clear danh sách ảnh sau khi up thành công
+  selectedImageFiles = [];
+  renderImagePreviews();
 
   save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
