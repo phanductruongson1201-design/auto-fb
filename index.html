@@ -71,7 +71,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .page-token-status { font-size: 11px; margin-top: 1px; }
 .chk { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin-left: auto; flex-shrink: 0; transition: all .15s; background: var(--surface); }
 .page-item.sel .chk { background: var(--blue); border-color: var(--blue); }
-.select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.select-all-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
 .link-btn { font-size: 12px; color: var(--blue); background: none; border: none; cursor: pointer; font-family: inherit; font-weight: 600; }
 .link-btn:hover { text-decoration: underline; }
 
@@ -117,8 +117,8 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .step-t { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
 .step-d { font-size: 13px; color: var(--text2); line-height: 1.6; }
 .step-d code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; color: var(--text); }
-.page-saved-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.page-saved-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.page-saved-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; max-height: 500px; overflow-y: auto; padding-right: 4px; }
+.page-saved-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); transition: all 0.15s; }
 .page-saved-info { flex: 1; min-width: 0; }
 .page-saved-name { font-size: 13px; font-weight: 600; }
 .page-saved-course { font-size: 11px; color: #185FA5; background: var(--blue-l); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 3px; font-weight: 600; }
@@ -208,7 +208,9 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
       <div class="card" style="padding-right: 8px;">
         <div class="select-all-row" style="padding-right: 8px;">
           <div class="card-label" style="margin:0">📄 Danh sách Fanpage</div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px; flex-wrap: wrap; justify-content: flex-end;">
+            <button id="btnRetryFailed" class="link-btn" onclick="selectFailedPages()" style="display:none; color: var(--red); border: 1px solid var(--red-l); padding: 2px 6px; border-radius: 4px;">☑ Chọn lại page lỗi</button>
+            
             <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
             <button class="link-btn" onclick="showTab('pages')" style="color:var(--text3)">+ Thêm</button>
           </div>
@@ -250,6 +252,13 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   <div style="max-width:680px;margin:0 auto">
     <div class="card">
       <div class="card-label">📄 Các fanpage đã lưu</div>
+      
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px; background: var(--surface2); padding: 10px; border-radius: var(--radius-sm);">
+         <button class="btn secondary" onclick="toggleAllManage()" style="padding: 6px 10px;">☑ Chọn tất cả</button>
+         <input type="text" class="input-field" id="bulkGroupName" placeholder="Nhập tên khóa học / nhóm mới..." style="margin:0; flex:1; padding: 6px 10px;">
+         <button class="btn primary" onclick="assignGroupToSelected()" style="padding: 6px 12px;">Chuyển nhóm</button>
+      </div>
+
       <div id="savedPagesList"><div class="empty-hint">Chưa có fanpage nào. Thêm bên dưới.</div></div>
       
       <div class="sep"></div>
@@ -331,6 +340,10 @@ const LS_STATS = 'fbp_stats_v3';
 let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {posted:0,failed:0};
 let editingPageId = null;
 let selectedImageFiles = [];
+let manageSelected = new Set();
+
+// Biến lưu các page bị lỗi trong lần chạy gần nhất
+let failedLastRun = new Set(); 
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -339,7 +352,6 @@ function init() {
   try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { history=[]; }
   try { stats = JSON.parse(localStorage.getItem(LS_STATS)) || {posted:0,failed:0}; } catch(e) { stats={posted:0,failed:0}; }
   
-  // Chuẩn hóa dữ liệu cũ (nếu chưa có course thì gán mặc định)
   pages.forEach(p => { if(!p.course) p.course = 'Chưa phân loại'; });
   save();
 
@@ -428,7 +440,7 @@ function setMode(m) {
   updateBtn();
 }
 
-// ---- MAIN TAB: RENDER NHÓM (COURSE) ----
+// ---- MAIN TAB: RENDER NHÓM ----
 function renderPageList() {
   const list = document.getElementById('pageList');
   if (!pages.length) {
@@ -437,8 +449,6 @@ function renderPageList() {
   }
   
   list.innerHTML = '';
-  
-  // Nhóm các page theo course
   const groups = {};
   pages.forEach(p => {
      const c = p.course || 'Chưa phân loại';
@@ -446,11 +456,8 @@ function renderPageList() {
      groups[c].push(p);
   });
 
-  // Hiển thị từng nhóm
   Object.keys(groups).sort().forEach(courseName => {
      const pagesInGroup = groups[courseName];
-     
-     // 1. In Tiêu đề nhóm
      const header = document.createElement('div');
      header.className = 'group-header';
      header.innerHTML = `
@@ -459,7 +466,6 @@ function renderPageList() {
      `;
      list.appendChild(header);
 
-     // 2. In các page trong nhóm đó
      pagesInGroup.forEach(p => {
         const div = document.createElement('div');
         const hasTok = !!p.token;
@@ -481,22 +487,12 @@ function renderPageList() {
   updateBtn(); updateStatsUI();
 }
 
-// Hàm chọn tất cả page của một Group cụ thể
 function toggleGroup(courseName) {
    const pagesInGroup = pages.filter(p => (p.course || 'Chưa phân loại') === courseName && p.token);
    if (pagesInGroup.length === 0) return;
-   
-   // Kiểm tra xem nhóm này đã được chọn hết chưa
    const allSelected = pagesInGroup.every(p => selected.has(p.id));
-   
-   if (allSelected) {
-       // Bỏ chọn cả nhóm
-       pagesInGroup.forEach(p => selected.delete(p.id));
-   } else {
-       // Chọn tất cả trong nhóm
-       pagesInGroup.forEach(p => selected.add(p.id));
-   }
-   
+   if (allSelected) pagesInGroup.forEach(p => selected.delete(p.id));
+   else pagesInGroup.forEach(p => selected.add(p.id));
    renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
 }
 
@@ -505,6 +501,17 @@ function toggleAll() {
   if (selected.size === withToken.length && withToken.length > 0) selected.clear();
   else withToken.forEach(p => selected.add(p.id));
   renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
+}
+
+// Xử lý nút "Chọn lại page lỗi"
+function selectFailedPages() {
+  selected.clear();
+  failedLastRun.forEach(id => selected.add(id));
+  renderPageList();
+  updatePreview();
+  updateBtn();
+  updateStatsUI();
+  showToast(`Đã tự động chọn lại ${failedLastRun.size} page bị lỗi!`, 'var(--amber)');
 }
 
 function updatePreview() {
@@ -530,7 +537,7 @@ function updateStatsUI() {
   document.getElementById('stSel').textContent = selected.size;
 }
 
-// ---- SAVED PAGES (management tab) ----
+// ---- LOGIC TAB QUẢN LÝ PAGE (CÓ CHECKBOX) ----
 function renderSavedPages() {
   const container = document.getElementById('savedPagesList');
   if (!pages.length) { container.innerHTML = '<div class="empty-hint">Chưa có fanpage nào.</div>'; return; }
@@ -538,19 +545,24 @@ function renderSavedPages() {
   const list = document.createElement('div');
   list.className = 'page-saved-list';
   
-  // Vẫn sắp xếp danh sách theo khóa học cho dễ nhìn
   const sortedPages = [...pages].sort((a,b) => (a.course||'').localeCompare(b.course||''));
 
   sortedPages.forEach(p => {
     const row = document.createElement('div');
     row.className = 'page-saved-row';
+    const isSel = manageSelected.has(p.id);
+    const chkBg = isSel ? 'var(--blue)' : 'var(--surface)';
+    const chkBd = isSel ? 'var(--blue)' : 'var(--border)';
+    const svgDisp = isSel ? 'block' : 'none';
+
     const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const av = p.pic ? `<img class="page-avatar" src="${p.pic}" style="width:34px;height:34px" alt="">` : `<div class="page-avatar" style="background:var(--blue-l);color:var(--blue);width:34px;height:34px">${initials}</div>`;
-    
-    // Tìm index thật trong mảng gốc để xóa chính xác
     const trueIndex = pages.findIndex(op => op.id === p.id);
     
     row.innerHTML = `
+      <div class="chk" onclick="toggleManageSelect('${p.id}')" style="cursor:pointer; margin-left:0; margin-right:6px; background:${chkBg}; border-color:${chkBd}">
+         <svg width="10" height="10" viewBox="0 0 10 10" style="display:${svgDisp}"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      </div>
       ${av}
       <div class="page-saved-info">
          <div class="page-saved-name">${p.name}</div>
@@ -558,7 +570,7 @@ function renderSavedPages() {
          <div class="page-saved-id" style="margin-top:3px">ID: ${p.id}</div>
       </div>
       <span class="badge ${p.token?'badge-ok':'badge-warn'}">${p.token?'Token OK':'No token'}</span>
-      <button class="btn secondary" style="font-size:12px;padding:5px 10px;margin-right:5px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}', '${p.course}')">✏️ Chỉnh sửa</button>
+      <button class="btn secondary" style="font-size:12px;padding:5px 10px;margin-right:5px" onclick="openTokenModal('${p.id}','${p.name.replace(/'/g,"\\'")}', '${p.course}')">✏️ Sửa</button>
       <button class="del-btn" onclick="deletePage(${trueIndex})">×</button>
     `;
     list.appendChild(row);
@@ -566,9 +578,38 @@ function renderSavedPages() {
   container.appendChild(list);
 }
 
+function toggleManageSelect(id) {
+   if (manageSelected.has(id)) manageSelected.delete(id);
+   else manageSelected.add(id);
+   renderSavedPages();
+}
+
+function toggleAllManage() {
+   if (manageSelected.size === pages.length && pages.length > 0) manageSelected.clear();
+   else pages.forEach(p => manageSelected.add(p.id));
+   renderSavedPages();
+}
+
+function assignGroupToSelected() {
+   const groupName = document.getElementById('bulkGroupName').value.trim() || 'Chưa phân loại';
+   if (manageSelected.size === 0) {
+      showToast('Vui lòng tích chọn ít nhất 1 page bên dưới!', 'var(--amber)');
+      return;
+   }
+   let count = 0;
+   pages.forEach(p => {
+      if (manageSelected.has(p.id)) { p.course = groupName; count++; }
+   });
+   manageSelected.clear(); 
+   document.getElementById('bulkGroupName').value = '';
+   save(); renderSavedPages(); renderPageList(); 
+   showToast(`Đã chuyển ${count} page vào nhóm "${groupName}"!`, 'var(--green)');
+}
+
 function deletePage(i) {
   if (!confirm(`Xoá page "${pages[i].name}"?`)) return;
-  selected.delete(pages[i].id); pages.splice(i,1); save(); renderSavedPages(); renderPageList();
+  selected.delete(pages[i].id); manageSelected.delete(pages[i].id);
+  pages.splice(i,1); save(); renderSavedPages(); renderPageList();
 }
 
 async function verifyAndAdd() {
@@ -597,7 +638,6 @@ async function verifyAndAdd() {
   } catch(e) { msg.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message}</span>`; }
 }
 
-// ---- MODAL ĐỔI NHÓM / ĐỔI TOKEN ----
 function openTokenModal(id, name, course) {
   editingPageId = id; 
   document.getElementById('modalTitle').textContent = 'Chỉnh sửa — ' + name;
@@ -616,27 +656,20 @@ async function saveModalToken() {
   
   msg.innerHTML = '<span style="color:var(--text3)">Đang cập nhật...</span>';
 
-  // Nếu người dùng nhập Token mới -> Phải xác minh lại Token
   if (token) {
       try {
         const res = await fetch(`https://graph.facebook.com/v19.0/${editingPageId}?fields=name,fan_count,picture&access_token=${token}`);
         const data = await res.json();
         if (data.error) throw new Error(data.error.message);
         
-        page.token = token;
-        page.fans = data.fan_count || page.fans;
-        page.pic = data.picture?.data?.url || page.pic;
+        page.token = token; page.fans = data.fan_count || page.fans; page.pic = data.picture?.data?.url || page.pic;
       } catch(e) { 
         msg.innerHTML = `<span style="color:var(--red)">❌ Token không hợp lệ: ${e.message}</span>`; 
-        return; // Dừng lại nếu lỗi token
+        return; 
       }
   }
-
-  // Cập nhật Tên khóa học (bất kể có đổi token hay không)
   page.course = course;
-  
-  save(); closeModal(); renderPageList(); renderSavedPages(); 
-  showToast('Đã lưu thay đổi!', 'var(--green)');
+  save(); closeModal(); renderPageList(); renderSavedPages(); showToast('Đã lưu thay đổi!', 'var(--green)');
 }
 
 // ---- POST APIs CỐT LÕI ----
@@ -646,8 +679,7 @@ async function postToPage(page, message) {
     body: JSON.stringify({ message, access_token: page.token })
   });
   const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.id;
+  if (data.error) throw new Error(data.error.message); return data.id;
 }
 
 async function uploadPhotoUnpublished(page, file) {
@@ -716,6 +748,10 @@ async function doPost() {
 
   const btn = document.getElementById('postBtn'); btn.disabled = true;
   const log = document.getElementById('resLog'); log.innerHTML = '';
+  
+  // Reset danh sách lỗi của lần chạy trước
+  failedLastRun.clear();
+  document.getElementById('btnRetryFailed').style.display = 'none';
 
   for (let i = 0; i < selPages.length; i++) {
     const page = selPages[i];
@@ -740,6 +776,7 @@ async function doPost() {
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
+      failedLastRun.add(page.id); // Lưu lại page bị lỗi
       history.unshift({page:page.name, text:(text || '[Lỗi]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div'); d.className = 'res-item err';
       d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}`;
@@ -755,6 +792,14 @@ async function doPost() {
   }
 
   selectedImageFiles = []; renderImagePreviews();
+  
+  // Nếu có page lỗi, hiện nút Chọn lại page lỗi
+  if (failedLastRun.size > 0) {
+     const btnRetry = document.getElementById('btnRetryFailed');
+     btnRetry.style.display = 'inline-block';
+     btnRetry.textContent = `☑ Chọn lại ${failedLastRun.size} page lỗi`;
+  }
+
   save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="postBtnTxt"></span>`;
