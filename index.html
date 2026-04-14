@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FanPage Publisher — Đăng bài tự động</title>
+<title>FanPage Publisher — Đăng bài tự động (Bản Cloud Sync)</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -19,6 +19,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; height: 50px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 200; }
 .nav-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--blue); }
 .nav-brand svg { width: 26px; height: 26px; fill: var(--blue); }
+.cloud-status { margin-left: 10px; font-size: 11px; padding: 3px 8px; background: var(--green-l); color: var(--green); border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .nav-tab { padding: 5px 12px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; border: none; background: transparent; color: var(--text2); font-family: inherit; transition: all .15s; }
 .nav-tab:hover { background: var(--surface2); }
@@ -53,6 +54,8 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .post-btn { width: 100%; padding: 11px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
 .post-btn:hover:not(:disabled) { opacity: .9; }
 .post-btn:disabled { opacity: .45; cursor: not-allowed; }
+.cancel-btn { background: var(--red); color: white; padding: 0 20px; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; cursor: pointer; display: none; transition: opacity .15s; }
+.cancel-btn:hover { opacity: .85; }
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -140,13 +143,18 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
 .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-database-compat.js"></script>
+
 </head>
 <body>
 
 <nav>
   <div class="nav-brand">
     <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-    FanPage Publisher
+    FanPage Publisher 
+    <div class="cloud-status" id="cloudStatus">☁️ Đang kết nối mây...</div>
   </div>
   <div class="nav-right">
     <button class="nav-tab active" id="nt-post" onclick="showTab('post')">✏️ Đăng bài</button>
@@ -196,10 +204,15 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
           </div>
           <input type="datetime-local" class="dt-input" id="schedDt" style="display:none">
         </div>
-        <button class="post-btn" id="postBtn" onclick="doPost()" disabled>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span id="postBtnTxt">Chưa có fanpage nào</span>
-        </button>
+        
+        <div style="display: flex; gap: 8px;">
+          <button class="post-btn" id="postBtn" onclick="doPost()" disabled style="flex: 1;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span id="postBtnTxt">Chưa có fanpage nào</span>
+          </button>
+          <button class="cancel-btn" id="cancelBtn" onclick="cancelPost()">⏹ Dừng</button>
+        </div>
+
         <div id="resLog" class="res-log"></div>
       </div>
     </div>
@@ -210,7 +223,6 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
           <div class="card-label" style="margin:0">📄 Danh sách Fanpage</div>
           <div style="display:flex;gap:8px; flex-wrap: wrap; justify-content: flex-end;">
             <button id="btnRetryFailed" class="link-btn" onclick="selectFailedPages()" style="display:none; color: var(--red); border: 1px solid var(--red-l); padding: 2px 6px; border-radius: 4px;">☑ Chọn lại page lỗi</button>
-            
             <button class="link-btn" onclick="toggleAll()">Chọn tất cả</button>
             <button class="link-btn" onclick="showTab('pages')" style="color:var(--text3)">+ Thêm</button>
           </div>
@@ -289,6 +301,17 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
       </div>
       <div id="verifyMsg" style="margin-top:10px;font-size:13px"></div>
     </div>
+    
+    <div class="card">
+      <div class="card-label">💾 Sao lưu File (Dự phòng)</div>
+      <div class="info-box amber">Dữ liệu đã tự động đồng bộ lên Firebase. Nút tải file này chỉ dùng để cất giữ dự phòng trong máy tính.</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn secondary" onclick="exportData()" style="flex:1; border-color: var(--blue); color: var(--blue);">📥 Xuất dữ liệu (Tải file .json)</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn primary" onclick="document.getElementById('importFile').click()" style="flex:1; display:none">📤 Nhập dữ liệu (Tải lên)</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -296,17 +319,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
   <div style="max-width:620px;margin:0 auto">
     <div class="card">
       <div class="card-label">📖 Hướng dẫn nhanh</div>
-      <div class="info-box green">✅ Cách lấy Token hoạt động ngay, không cần App Review, không cần backend.</div>
-      <div class="step">
-        <div class="step-n">1</div>
-        <div><div class="step-t">Vào Graph API Explorer</div>
-        <div class="step-d">Truy cập <a href="https://developers.facebook.com/tools/explorer" target="_blank" style="color:var(--blue);font-weight:600">developers.facebook.com/tools/explorer</a> và đăng nhập.</div></div>
-      </div>
-      <div class="step">
-        <div class="step-n">2</div>
-        <div><div class="step-t">Bơm data từ Console</div>
-        <div class="step-d">Sử dụng tính năng copy JSON từ Graph API và dán vào Console (F12) như đã hướng dẫn trước đó để thêm 200+ trang cùng lúc.</div></div>
-      </div>
+      <div class="info-box green">✅ Dữ liệu hiện tại đã được đồng bộ hóa hoàn toàn trên nền tảng đám mây Firebase.</div>
     </div>
   </div>
 </div>
@@ -314,13 +327,10 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Chỉnh sửa Fanpage</div>
-    
     <label class="input-label">Đổi Nhóm / Khóa học</label>
     <input type="text" class="input-field" id="modalCourse" placeholder="Nhập tên khóa học (VD: Khóa MC)">
-    
     <label class="input-label" style="margin-top: 10px;">Cập nhật Page Access Token (Để trống nếu chỉ đổi nhóm)</label>
     <input type="password" class="input-field" id="modalToken" placeholder="Chỉ nhập khi token cũ đã hết hạn...">
-    
     <div id="modalMsg" style="font-size:13px;margin-top:4px"></div>
     <div class="modal-footer">
       <button class="btn secondary" onclick="closeModal()">Huỷ</button>
@@ -332,6 +342,22 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 <div class="toast" id="toast"><div class="toast-dot" id="toastDot"></div><span id="toastMsg"></span></div>
 
 <script>
+// --- CẤU HÌNH FIREBASE CỦA BẠN (Dán cấu hình copy từ Firebase Console vào đây) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBtORNIjP2IJiNkgPxCrln2hyGsQazZI9o",
+  authDomain: "fb-auto-44fa4.firebaseapp.com",
+  databaseURL: "https://fb-auto-44fa4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "fb-auto-44fa4",
+  storageBucket: "fb-auto-44fa4.firebasestorage.app",
+  messagingSenderId: "574469396219",
+  appId: "1:574469396219:web:fab6a4d943d125b4c7425e"
+};
+
+// Khởi tạo Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
 const TAGS = ['#KhuyếnMãi','#MớiNhất','#HotDeal','#TinTức','#Review','#Sale','#Trending','#Update'];
 const LS_PAGES = 'fbp_pages_v3';
 const LS_HIST  = 'fbp_hist_v3';
@@ -341,29 +367,66 @@ let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {
 let editingPageId = null;
 let selectedImageFiles = [];
 let manageSelected = new Set();
-
-// Biến lưu các page bị lỗi trong lần chạy gần nhất
 let failedLastRun = new Set(); 
+let isCancelled = false;
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function init() {
+  // Lấy dữ liệu Local cũ (Chỉ dùng khi Firebase lỗi mạng)
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
   try { history = JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { history=[]; }
   try { stats = JSON.parse(localStorage.getItem(LS_STATS)) || {posted:0,failed:0}; } catch(e) { stats={posted:0,failed:0}; }
   
   pages.forEach(p => { if(!p.course) p.course = 'Chưa phân loại'; });
-  save();
 
+  // Render tạm giao diện trong lúc chờ Firebase
   renderTags(); renderPageList(); renderHistory(); updateStatsUI();
   const dt = new Date(); dt.setHours(dt.getHours()+1);
   document.getElementById('schedDt').value = dt.toISOString().slice(0,16);
+
+  // --- LẮNG NGHE DỮ LIỆU TỪ FIREBASE ĐÁM MÂY ---
+  const cloudStatus = document.getElementById('cloudStatus');
+  db.ref('fbp_pages').on('value', (snapshot) => {
+      const cloudData = snapshot.val();
+      
+      if (cloudData) {
+          // Cloud có dữ liệu -> Đè lên máy tính
+          pages = cloudData;
+          localStorage.setItem(LS_PAGES, JSON.stringify(pages));
+          
+          // Lọc mảng Selected để không bị văng
+          const newIds = new Set(pages.map(p => p.id));
+          selected.forEach(id => { if(!newIds.has(id)) selected.delete(id); });
+
+          renderSavedPages();
+          renderPageList();
+          updateStatsUI();
+          cloudStatus.innerHTML = '☁️ Đã đồng bộ!';
+          cloudStatus.style.background = 'var(--green-l)';
+          cloudStatus.style.color = 'var(--green)';
+      } 
+      else if (pages.length > 0) {
+          // Cloud trống nhưng máy tính của bạn (người cài đặt) có chứa 200 page 
+          // -> TỰ ĐỘNG ĐẨY LÊN CLOUD LẦN ĐẦU TIÊN
+          db.ref('fbp_pages').set(pages);
+          cloudStatus.innerHTML = '☁️ Đã tải lên Cloud!';
+      }
+  }, (error) => {
+      cloudStatus.innerHTML = '❌ Lỗi kết nối Cloud';
+      cloudStatus.style.background = 'var(--red-l)';
+      cloudStatus.style.color = 'var(--red)';
+      console.error(error);
+  });
 }
 
 function save() {
   localStorage.setItem(LS_PAGES, JSON.stringify(pages));
   localStorage.setItem(LS_HIST, JSON.stringify(history));
   localStorage.setItem(LS_STATS, JSON.stringify(stats));
+
+  // ĐẨY MỌI SỰ THAY ĐỔI LÊN FIREBASE ĐÁM MÂY
+  db.ref('fbp_pages').set(pages);
 }
 
 function showTab(tab) {
@@ -503,14 +566,10 @@ function toggleAll() {
   renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
 }
 
-// Xử lý nút "Chọn lại page lỗi"
 function selectFailedPages() {
   selected.clear();
   failedLastRun.forEach(id => selected.add(id));
-  renderPageList();
-  updatePreview();
-  updateBtn();
-  updateStatsUI();
+  renderPageList(); updatePreview(); updateBtn(); updateStatsUI();
   showToast(`Đã tự động chọn lại ${failedLastRun.size} page bị lỗi!`, 'var(--amber)');
 }
 
@@ -602,7 +661,8 @@ function assignGroupToSelected() {
    });
    manageSelected.clear(); 
    document.getElementById('bulkGroupName').value = '';
-   save(); renderSavedPages(); renderPageList(); 
+   save(); // Sẽ tự động trigger đẩy lên Firebase
+   renderSavedPages(); renderPageList(); 
    showToast(`Đã chuyển ${count} page vào nhóm "${groupName}"!`, 'var(--green)');
 }
 
@@ -672,6 +732,59 @@ async function saveModalToken() {
   save(); closeModal(); renderPageList(); renderSavedPages(); showToast('Đã lưu thay đổi!', 'var(--green)');
 }
 
+// ---- TÍNH NĂNG SAO LƯU FILE DỰ PHÒNG ----
+function exportData() {
+  if (pages.length === 0) {
+      showToast('Không có dữ liệu Fanpage để xuất!', 'var(--amber)');
+      return;
+  }
+  const dataStr = JSON.stringify(pages, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = `fanpage_backup_${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Đã tải xuống file sao lưu!', 'var(--green)');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+      try {
+          const importedPages = JSON.parse(e.target.result);
+          if (!Array.isArray(importedPages)) throw new Error("File không đúng định dạng mảng JSON.");
+          
+          let count = 0;
+          importedPages.forEach(p => {
+              if (p.id && p.token) { 
+                  const existing = pages.findIndex(ep => ep.id === p.id);
+                  if (existing === -1) {
+                      pages.push(p);
+                      count++;
+                  } else {
+                      pages[existing].token = p.token;
+                      pages[existing].course = p.course || pages[existing].course;
+                  }
+              }
+          });
+          save(); renderSavedPages(); renderPageList(); updateStatsUI();
+          showToast(`Đã nhập thành công ${count} Fanpage mới!`, 'var(--green)');
+      } catch (error) {
+          showToast('Lỗi đọc file: ' + error.message, 'var(--red)');
+      }
+      document.getElementById('importFile').value = ''; 
+  };
+  reader.readAsText(file);
+}
+
+
 // ---- POST APIs CỐT LÕI ----
 async function postToPage(page, message) {
   const res = await fetch(`https://graph.facebook.com/v19.0/${page.id}/feed`, {
@@ -693,6 +806,7 @@ async function uploadPhotoUnpublished(page, file) {
 async function postWithMultiplePhotos(page, message, files, btnEl) {
   const mediaIds = [];
   for (let i = 0; i < files.length; i++) {
+    if (isCancelled) throw new Error("Đã dừng khẩn cấp bởi người dùng");
     if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Đang up ảnh ${i+1}/${files.length} (${page.name})...</span>`;
     mediaIds.push(await uploadPhotoUnpublished(page, files[i]));
   }
@@ -718,6 +832,7 @@ async function postLargeGallery(page, message, files, btnEl) {
   
   const albumId = albumData.id;
   for (let i = 0; i < files.length; i++) {
+     if (isCancelled) throw new Error("Đã dừng khẩn cấp bởi người dùng");
      if (btnEl) btnEl.innerHTML = `<div class="spinner"></div><span>Up ảnh ${i+1}/${files.length} vào Album...</span>`;
      const formData = new FormData();
      formData.append('access_token', page.token); formData.append('source', files[i]);
@@ -736,6 +851,14 @@ async function autoComment(postId, pageToken, message) {
   if (data.error) throw new Error(data.error.message); return data.id;
 }
 
+// Xử lý Dừng khẩn cấp
+function cancelPost() {
+    if (!confirm('Bạn có chắc chắn muốn DỪNG tiến trình đăng bài ngay lập tức?')) return;
+    isCancelled = true;
+    document.getElementById('cancelBtn').disabled = true;
+    document.getElementById('cancelBtn').textContent = 'Đang dừng...';
+}
+
 // ---- QUÁ TRÌNH CHẠY CHÍNH ----
 async function doPost() {
   const text = document.getElementById('postText').value.trim();
@@ -746,16 +869,27 @@ async function doPost() {
   const selPages = pages.filter(p => selected.has(p.id));
   if (!selPages.length) return;
 
-  const btn = document.getElementById('postBtn'); btn.disabled = true;
-  const log = document.getElementById('resLog'); log.innerHTML = '';
+  const btn = document.getElementById('postBtn'); 
+  const cancelBtn = document.getElementById('cancelBtn');
   
-  // Reset danh sách lỗi của lần chạy trước
+  btn.disabled = true;
+  isCancelled = false;
+  cancelBtn.style.display = 'block';
+  cancelBtn.disabled = false;
+  cancelBtn.textContent = '⏹ Dừng';
+
+  const log = document.getElementById('resLog'); log.innerHTML = '';
   failedLastRun.clear();
   document.getElementById('btnRetryFailed').style.display = 'none';
 
   for (let i = 0; i < selPages.length; i++) {
+    if (isCancelled) {
+        showToast('Đã hủy tiến trình đăng bài!', 'var(--amber)');
+        break; 
+    }
+
     const page = selPages[i];
-    btn.innerHTML = `<div class="spinner"></div><span>Đang chuẩn bị: ${page.name}...</span>`;
+    btn.innerHTML = `<div class="spinner"></div><span>Đang xử lý: ${page.name}...</span>`;
 
     try {
       let postId;
@@ -775,16 +909,21 @@ async function doPost() {
       d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng OK${cmtStatus} · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
+      if (e.message === "Đã dừng khẩn cấp bởi người dùng") {
+         showToast('Đã dừng tiến trình an toàn!', 'var(--amber)');
+         break;
+      }
       stats.failed++;
-      failedLastRun.add(page.id); // Lưu lại page bị lỗi
+      failedLastRun.add(page.id); 
       history.unshift({page:page.name, text:(text || '[Lỗi]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div'); d.className = 'res-item err';
       d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}`;
       log.appendChild(d);
     }
 
-    if (i < selPages.length - 1) {
+    if (i < selPages.length - 1 && !isCancelled) {
        for(let s = delaySec; s > 0; s--) {
+          if (isCancelled) break;
           btn.innerHTML = `<div class="spinner"></div><span>Đang nghỉ ${s}s tránh Checkpoint...</span>`;
           await sleep(1000);
        }
@@ -792,8 +931,8 @@ async function doPost() {
   }
 
   selectedImageFiles = []; renderImagePreviews();
+  cancelBtn.style.display = 'none';
   
-  // Nếu có page lỗi, hiện nút Chọn lại page lỗi
   if (failedLastRun.size > 0) {
      const btnRetry = document.getElementById('btnRetryFailed');
      btnRetry.style.display = 'inline-block';
@@ -803,7 +942,9 @@ async function doPost() {
   save(); renderHistory(); updateStatsUI();
   btn.disabled = false;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="postBtnTxt"></span>`;
-  updateBtn(); showToast('Hoàn tất '+selPages.length+' trang!', 'var(--green)');
+  updateBtn(); 
+  
+  if (!isCancelled) showToast('Hoàn tất quá trình!', 'var(--green)');
 }
 
 function renderHistory() {
