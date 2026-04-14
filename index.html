@@ -86,7 +86,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .htext { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .htime { color: var(--text3); flex-shrink: 0; }
 .hdel { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; }
-.res-log { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+.res-log { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; max-height: 250px; overflow-y: auto; }
 .res-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 11px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; }
 .res-item.ok  { background: var(--green-l); color: #0F6E56; }
 .res-item.err { background: var(--red-l);   color: #A32D2D; }
@@ -124,6 +124,7 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
 .toast { position: fixed; bottom: 22px; right: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 16px; font-size: 13px; display: flex; align-items: center; gap: 9px; z-index: 999; opacity: 0; transform: translateY(6px); transition: all .22s; pointer-events: none; max-width: 300px; box-shadow: var(--shadow); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.delay-input { width: 70px; margin: 0; padding: 6px 10px; text-align: center; display: inline-block; }
 /* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
 .modal-overlay.open { display: flex; }
@@ -169,6 +170,15 @@ nav { background: var(--surface); border-bottom: 1px solid var(--border); paddin
         
         <div id="mediaArea"></div>
         
+        <div class="card-label" style="margin-top:14px">💬 Bình luận tự động (Top Comment)</div>
+        <textarea class="post-area" id="commentText" style="min-height: 80px; background:var(--blue-l); border-color:var(--blue-m);" placeholder="Nhập bình luận mồi (Sẽ tự động comment sau khi đăng bài xong)..."></textarea>
+
+        <div class="sep"></div>
+        <div class="card-label">⏳ Chống Checkpoint (Spam)</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px; font-size:13px; color:var(--text2)">
+          Thời gian nghỉ giữa mỗi trang: 
+          <input type="number" id="delayInput" value="30" min="2" max="600" class="input-field delay-input"> giây
+        </div>
         <div class="sep"></div>
         <div class="card-label">⏰ Lên lịch</div>
         <div class="sched-row">
@@ -319,9 +329,10 @@ const LS_STATS = 'fbp_stats_v3';
 
 let pages = [], selected = new Set(), schedMode = 'now', history = [], stats = {posted:0,failed:0};
 let editingPageId = null;
-
-// Thêm biến quản lý ảnh
 let selectedImageFiles = [];
+
+// Hàm Sleep (Nghỉ giữa các lần đăng)
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function init() {
   try { pages = JSON.parse(localStorage.getItem(LS_PAGES)) || []; } catch(e) { pages=[]; }
@@ -378,13 +389,12 @@ function onTextChange() {
   body.className = 'fb-body'+(text.trim()?' has':'');
 }
 
-// Hàm hỗ trợ chọn nhiều ảnh
 function handleImageSelect(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
   selectedImageFiles = selectedImageFiles.concat(files);
   renderImagePreviews();
-  document.getElementById('imageInput').value = ''; // Reset input
+  document.getElementById('imageInput').value = '';
 }
 
 function renderImagePreviews() {
@@ -404,7 +414,6 @@ function removeImage(index) {
   renderImagePreviews();
 }
 
-// Demo function cho nút Video/Link
 function addMedia(e, l) {
   const div = document.createElement('div');
   div.className = 'media-item';
@@ -577,7 +586,6 @@ async function postToPage(page, message) {
   return data.id;
 }
 
-// API Tải ảnh lên ẩn (không hiện ngay lên wall) để lấy ID
 async function uploadPhotoUnpublished(page, file) {
   const formData = new FormData();
   formData.append('access_token', page.token);
@@ -590,7 +598,6 @@ async function uploadPhotoUnpublished(page, file) {
   return data.id;
 }
 
-// API gom nhóm nhiều ảnh vào 1 bài đăng
 async function postWithMultiplePhotos(page, message, files) {
   const mediaIds = [];
   for (let file of files) {
@@ -614,9 +621,23 @@ async function postWithMultiplePhotos(page, message, files) {
   return data.id;
 }
 
+// Tự động Comment sau khi đăng
+async function autoComment(postId, pageToken, message) {
+  const res = await fetch(`https://graph.facebook.com/v19.0/${postId}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: message, access_token: pageToken })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.id;
+}
+
 // ---- DO POST PROCESS ----
 async function doPost() {
   const text = document.getElementById('postText').value.trim();
+  const commentText = document.getElementById('commentText').value.trim();
+  let delaySec = parseInt(document.getElementById('delayInput').value) || 30;
   
   // Ràng buộc kiểm tra nội dung
   if (!text && selectedImageFiles.length === 0) { 
@@ -629,12 +650,14 @@ async function doPost() {
 
   const btn = document.getElementById('postBtn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div><span>Đang đăng...</span>';
-
+  
   const log = document.getElementById('resLog');
   log.innerHTML = '';
 
-  for (const page of selPages) {
+  for (let i = 0; i < selPages.length; i++) {
+    const page = selPages[i];
+    btn.innerHTML = `<div class="spinner"></div><span>Đang đăng lên: ${page.name}...</span>`;
+
     try {
       let postId;
       if (selectedImageFiles.length > 0) {
@@ -642,22 +665,41 @@ async function doPost() {
       } else {
         postId = await postToPage(page, text);
       }
+
+      // Xử lý Auto Comment
+      let cmtStatus = '';
+      if (commentText) {
+         try { 
+            await autoComment(postId, page.token, commentText); 
+            cmtStatus = ' (+ 1 Bình luận)'; 
+         } catch(ce) { 
+            cmtStatus = ` (Lỗi cmt: ${ce.message})`; 
+         }
+      }
       
       stats.posted++;
-      history.unshift({page:page.name, text:(text || '[Tệp đính kèm]').slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
+      history.unshift({page:page.name, text:(text || '[Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:true});
       const d = document.createElement('div');
       d.className = 'res-item ok';
-      d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng thành công · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
+      d.innerHTML = `✅ <strong>${page.name}</strong> — Đăng OK${cmtStatus} · <span style="font-family:monospace;font-size:12px">ID: ${postId}</span>`;
       log.appendChild(d);
     } catch(e) {
       stats.failed++;
-      history.unshift({page:page.name, text:(text || '[Tệp đính kèm]').slice(0,45), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
+      history.unshift({page:page.name, text:(text || '[Ảnh]').slice(0,40), time:new Date().toLocaleTimeString('vi-VN'), ok:false});
       const d = document.createElement('div');
       d.className = 'res-item err';
       const hint = e.message.includes('OAuthException') || e.message.includes('token')
         ? ' (Token hết hạn — cần cập nhật token mới)' : '';
       d.innerHTML = `❌ <strong>${page.name}</strong> — ${e.message}${hint}`;
       log.appendChild(d);
+    }
+
+    // Thời gian nghỉ chống Checkpoint (trừ page cuối cùng không cần nghỉ)
+    if (i < selPages.length - 1) {
+       for(let s = delaySec; s > 0; s--) {
+          btn.innerHTML = `<div class="spinner"></div><span>Đang nghỉ ${s}s tránh Checkpoint...</span>`;
+          await sleep(1000);
+       }
     }
   }
 
@@ -677,7 +719,7 @@ function renderHistory() {
   const list = document.getElementById('histList');
   if (!history.length) { list.innerHTML = '<div class="empty-hint" style="padding:8px">Chưa có lịch sử</div>'; return; }
   list.innerHTML = '';
-  history.slice(0,10).forEach((item,i) => {
+  history.slice(0,15).forEach((item,i) => {
     const div = document.createElement('div');
     div.className = 'hist-item';
     div.innerHTML = `<span class="hdot" style="background:${item.ok?'var(--green)':'var(--red)'}"></span><span class="htext">${item.page}: ${item.text}</span><span class="htime">${item.time}</span><button class="hdel" onclick="removeHist(${i})">×</button>`;
